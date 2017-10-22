@@ -19,5 +19,9 @@ public class Table {
         return size;
     }
 
+    public int getMaxPosition() {
+        return size * size;
+    }
+
 }
 

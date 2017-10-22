@@ -24,4 +24,9 @@ public class ClauseFormula {
                 .collect(Collectors.joining("\n"));
     }
 
+    public String toStringWithNames() {
+        return clauses.map(VarClause::toStringWithNames)
+                .collect(Collectors.joining("\n"));
+    }
+
 }

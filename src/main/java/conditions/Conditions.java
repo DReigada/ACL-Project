@@ -13,10 +13,10 @@ import java.util.stream.Stream;
 public class Conditions {
 
     public static ClauseFormula robotMustHavePosition(Table table, int time) {
-        int maxPos = table.getSize() * table.getSize();
+        int maxPos = table.getMaxPosition();
 
-        Stream<VarClause> clauses = IntStream.range(0, 4)
-                .mapToObj(robot -> {
+        Stream<VarClause> clauses = range(0, 4)
+                .map(robot -> {
                     val positions = IntStream.rangeClosed(1, maxPos)
                             .mapToObj(j -> new PositionVar(j, robot, time));
 
@@ -24,6 +24,33 @@ public class Conditions {
                 });
 
         return new ClauseFormula(clauses);
+    }
+
+    public static ClauseFormula robotCanNotHaveTwoPositions(Table table, int time) {
+        int maxPos = table.getMaxPosition();
+
+        Stream<VarClause> clauses =
+                range(0, 4)
+                        .flatMap(robot ->
+                                rangeClosed(1, maxPos).flatMap(j ->
+                                        rangeClosed(j + 1, maxPos).map(l -> {
+                                            val var1 = new PositionVar(j, robot, time).negate();
+                                            val var2 = new PositionVar(l, robot, time).negate();
+                                            return new VarClause(var1, var2);
+                                        })
+                                )
+                        );
+
+        return new ClauseFormula(clauses);
+    }
+
+
+    private static Stream<Integer> range(int i, int f) {
+        return IntStream.range(i, f).boxed();
+    }
+
+    private static Stream<Integer> rangeClosed(int i, int f) {
+        return IntStream.rangeClosed(i, f).boxed();
     }
 
 }

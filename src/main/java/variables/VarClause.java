@@ -2,6 +2,7 @@ package variables;
 
 import lombok.Value;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,11 +14,20 @@ public class VarClause {
         this.vars = vars;
     }
 
+    public VarClause(Variable... vars) {
+        this(Arrays.stream(vars));
+    }
+
 
     @Override
     public String toString() {
-        return vars.map(Variable::repr)
+        return vars.map(Variable::id)
                 .map(Object::toString)
+                .collect(Collectors.joining(" "));
+    }
+
+    public String toStringWithNames(){
+        return vars.map(Variable::toString)
                 .collect(Collectors.joining(" "));
     }
 }
