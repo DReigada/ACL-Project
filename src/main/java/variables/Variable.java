@@ -3,7 +3,7 @@ package variables;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
-abstract class Variable {
+public abstract class Variable {
 
     private int time;
 
