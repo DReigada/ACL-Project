@@ -14,7 +14,8 @@ public class MovementVar extends Variable {
 
     @Override
     public String toString() {
-        return "MovementVar(k=" + k + ", t=" + getTime() + ')';
+        String neg = isNegated() ? "-" : "";
+        return neg + "MovementVar(k=" + k + ", t=" + getTime() + ')';
     }
 
 }

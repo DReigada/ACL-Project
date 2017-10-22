@@ -15,7 +15,8 @@ public class PossibleMoveVar extends Variable {
 
     @Override
     public String toString() {
-        return "PossibleMoveVar(" + "j=" + j + ", l=" + l + ", t=" + getTime() + ')';
+        String neg = isNegated() ? "-" : "";
+        return neg + "PossibleMoveVar(" + "j=" + j + ", l=" + l + ", t=" + getTime() + ')';
     }
 
 }

@@ -7,10 +7,10 @@ public abstract class Variable {
 
     private int time;
 
-    private boolean neg;
+    private boolean negated;
 
     protected Variable(int time) {
-        neg = false;
+        negated = false;
         this.time = time;
     }
 
@@ -20,19 +20,27 @@ public abstract class Variable {
             repr = VarMap.map.size() + 1;
             VarMap.map.put(this, repr);
         }
-        return repr;
+        if (isNegated()) {
+            return -repr;
+        } else {
+            return repr;
+        }
     }
 
     /**
      * Careful: This changes the state of this object, even tough it returns it
      */
     public Variable negate() {
-        this.neg = true;
+        this.negated = true;
         return this;
     }
 
     public int getTime() {
         return time;
+    }
+
+    public boolean isNegated() {
+        return negated;
     }
 }
 
