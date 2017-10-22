@@ -15,13 +15,13 @@ public class Conditions {
     public static ClauseFormula robotMustHavePosition(Table table, int time) {
         int maxPos = table.getMaxPosition();
 
-        Stream<VarClause> clauses = range(0, 4)
-                .map(robot -> {
-                    val positions = IntStream.rangeClosed(1, maxPos)
-                            .mapToObj(j -> new PositionVar(j, robot, time));
-
-                    return new VarClause(positions);
-                });
+        Stream<VarClause> clauses =
+                robotRange()
+                        .map(robot -> {
+                            val positions = IntStream.rangeClosed(1, maxPos)
+                                    .mapToObj(j -> new PositionVar(j, robot, time));
+                            return new VarClause(positions);
+                        });
 
         return new ClauseFormula(clauses);
     }
@@ -30,7 +30,7 @@ public class Conditions {
         int maxPos = table.getMaxPosition();
 
         Stream<VarClause> clauses =
-                range(0, 4)
+                robotRange()
                         .flatMap(robot ->
                                 rangeClosed(1, maxPos).flatMap(j ->
                                         rangeClosed(j + 1, maxPos).map(l -> {
@@ -44,6 +44,9 @@ public class Conditions {
         return new ClauseFormula(clauses);
     }
 
+    private static Stream<Integer> robotRange() {
+        return range(0, 4);
+    }
 
     private static Stream<Integer> range(int i, int f) {
         return IntStream.range(i, f).boxed();
