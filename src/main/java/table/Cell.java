@@ -19,12 +19,16 @@ public class Cell {
         switch (pos) {
             case Left:
                 walls[0] = true;
+                break;
             case Right:
                 walls[1] = true;
+                break;
             case Up:
                 walls[2] = true;
+                break;
             case Down:
                 walls[3] = true;
+                break;
             default:
                 throw new RuntimeException("Invalid WallPosition this should never happen");
         }
