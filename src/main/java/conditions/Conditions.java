@@ -3,6 +3,7 @@ package conditions;
 import lombok.val;
 import table.Table;
 import variables.ClauseFormula;
+import variables.MovementVar;
 import variables.PositionVar;
 import variables.VarClause;
 
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 
 
 public class Conditions {
+    public static int NUM_ROBOTS = 4;
 
     public static ClauseFormula robotMustHavePosition(Table table, int time) {
         int maxPos = table.getMaxPosition();
@@ -44,8 +46,23 @@ public class Conditions {
         return new ClauseFormula(clauses);
     }
 
+    public static ClauseFormula onlyOneRobotCanMoveEachTimeStep(int time) {
+        Stream<VarClause> clauses = robotRange()
+                .flatMap(k ->
+                        range(k + 1, NUM_ROBOTS).map(h -> {
+                            val var1 = new MovementVar(k, time).negate();
+                            val var2 = new MovementVar(h, time).negate();
+                            return new VarClause(var1, var2);
+                        })
+                );
+
+        return new ClauseFormula(clauses);
+
+    }
+
+
     private static Stream<Integer> robotRange() {
-        return range(0, 4);
+        return range(0, NUM_ROBOTS);
     }
 
     private static Stream<Integer> range(int i, int f) {

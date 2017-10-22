@@ -9,8 +9,9 @@ public class App {
         val table = new Table(3);
         val c1 = Conditions.robotMustHavePosition(table, 1);
         val c2 = Conditions.robotCanNotHaveTwoPositions(table, 1);
+        val c3 = Conditions.onlyOneRobotCanMoveEachTimeStep(1);
 
-        System.out.println(c2.toStringWithNames());
+        System.out.println(c3.toStringWithNames());
 
     }
 }
