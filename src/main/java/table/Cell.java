@@ -1,9 +1,6 @@
 package table;
 
 public class Cell {
-    public enum WallPosition {
-        Left, Right, Up, Down
-    }
 
     public final int i, j;
 
@@ -15,7 +12,7 @@ public class Cell {
         walls = new boolean[4];
     }
 
-    public void addWall(WallPosition pos) {
+    public void addWall(Table.Direction pos) {
         switch (pos) {
             case Left:
                 walls[0] = true;
@@ -34,7 +31,7 @@ public class Cell {
         }
     }
 
-    public boolean hasWall(WallPosition pos) {
+    public boolean hasWall(Table.Direction pos) {
         switch (pos) {
             case Left:
                 return walls[0];
