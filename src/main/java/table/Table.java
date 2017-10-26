@@ -24,6 +24,7 @@ public class Table {
                 connectedCells[i][j] = new ConnectedCell(i, j, this);
             }
         }
+        connectCells();
     }
 
 
@@ -61,7 +62,11 @@ public class Table {
         }
     }
 
-    public Stream<EdgeWithDirection> listEdges() {
+    public Stream<EdgeWithDirection> getAllEdges() {
+        return listEdges();
+    }
+
+    private Stream<EdgeWithDirection> listEdges() {
         return range(0, size).flatMap(i ->
                 range(0, size).flatMap(j ->
                         connectedCells[i][j].listAllConnected()

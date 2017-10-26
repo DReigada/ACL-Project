@@ -1,6 +1,7 @@
 package variables;
 
 import lombok.EqualsAndHashCode;
+import lombok.val;
 
 @EqualsAndHashCode
 public abstract class Variable {
@@ -25,6 +26,17 @@ public abstract class Variable {
         } else {
             return repr;
         }
+    }
+
+    public VarClause implies(VarClause clause) {
+        val a = this.negate();
+        clause.addVariable(a);
+        return clause;
+    }
+
+    public VarClause implies(Variable var) {
+        val a = this.negate();
+        return new VarClause(a, var);
     }
 
     /**
