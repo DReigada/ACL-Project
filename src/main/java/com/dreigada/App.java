@@ -2,21 +2,18 @@ package com.dreigada;
 
 import conditions.Conditions;
 import lombok.val;
-import table.ConnectedCell;
 import table.Table;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 public class App {
-    public static void main(String[] args) {
-        val table = new Table(3);
-        val c1 = Conditions.robotMustHavePosition(table, 1);
-        val c2 = Conditions.robotCanNotHaveTwoPositions(table, 1);
-        val c3 = Conditions.onlyOneRobotCanMoveEachTimeStep(1);
-        val c4 = Conditions.stopVertex(table, 1);
+  public static void main(String[] args) {
+    val table = new Table(3);
+    val c1 = Conditions.robotMustHavePosition(table, 1);
+    val c2 = Conditions.robotCanNotHaveTwoPositions(table, 1);
+    val c3 = Conditions.onlyOneRobotCanMoveEachTimeStep(1);
+    val c4 = Conditions.stopVertex(table, 1);
+    val c5 = Conditions.noRobotsBetweenOrigAndDest(table, 1);
 
-        System.out.println(c4.toStringWithNames());
+    System.out.println(c5.toStringWithNames());
 
 
 //        table.cells[0][0].addWall(Table.Direction.Right);
@@ -30,5 +27,5 @@ public class App {
 //
 //        list.forEach(System.out::println);
 
-    }
+  }
 }

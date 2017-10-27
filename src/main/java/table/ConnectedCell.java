@@ -30,16 +30,16 @@ public class ConnectedCell {
         return doGetId(i, j);
     }
 
-    public int getNextId(Table.Direction dir) {
+    public ConnectedCell getNext(Table.Direction dir) {
         switch (dir) {
             case Up:
-                return up.getId();
+                return up;
             case Down:
-                return down.getId();
+                return down;
             case Left:
-                return left.getId();
+                return left;
             case Right:
-                return right.getId();
+                return right;
             default:
                 throw new RuntimeException("Invalid WallPosition this should never happen");
         }
@@ -51,11 +51,11 @@ public class ConnectedCell {
 
 
     private List<EdgeWithDirection> listConnected(Table.Direction dir) {
-        ConnectedCell next = getConnected(dir);
+        ConnectedCell next = getNext(dir);
         val acc = new LinkedList<EdgeWithDirection>();
 
         while (next != null) {
-            val newNext = next.getConnected(dir);
+            val newNext = next.getNext(dir);
             val isLast = newNext == null;
             val edge = new EdgeWithDirection(this, next, dir, isLast);
             acc.add(edge);
@@ -63,21 +63,6 @@ public class ConnectedCell {
         }
 
         return acc;
-    }
-
-    private ConnectedCell getConnected(Table.Direction dir) {
-        switch (dir) {
-            case Left:
-                return left;
-            case Right:
-                return right;
-            case Up:
-                return up;
-            case Down:
-                return down;
-            default:
-                throw new RuntimeException("Invalid WallPosition this should never happen");
-        }
     }
 
     @Override

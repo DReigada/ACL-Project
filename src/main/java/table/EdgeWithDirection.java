@@ -1,6 +1,11 @@
 package table;
 
 import lombok.Value;
+import lombok.val;
+
+import java.util.Iterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Value
 public class EdgeWithDirection {
@@ -9,6 +14,32 @@ public class EdgeWithDirection {
     boolean isLast;
 
     public int getNextId() {
-        return dest.getNextId(direction);
+        return dest.getNext(direction).getId();
+    }
+
+    public Stream<ConnectedCell> getStream() {
+        val iter = new Iterator<ConnectedCell>() {
+            ConnectedCell currentCell = orig;
+
+            @Override
+            public boolean hasNext() {
+                return getNext() != null;
+            }
+
+            @Override
+            public ConnectedCell next() {
+                val newCell = getNext();
+                currentCell = newCell;
+                return newCell;
+            }
+
+            private ConnectedCell getNext() {
+                return currentCell.getNext(direction);
+            }
+        };
+
+        Iterable<ConnectedCell> iterable = () -> iter;
+
+        return StreamSupport.stream(iterable.spliterator(), false);
     }
 }
