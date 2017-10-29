@@ -2,8 +2,9 @@ package table;
 
 import lombok.val;
 
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static helpers.StreamHelpers.range;
 
 public class Table {
   public enum Direction {
@@ -76,10 +77,6 @@ public class Table {
         range(0, size).flatMap(j ->
             connectedCells[i][j].listAllConnected()
         ));
-  }
-
-  private static Stream<Integer> range(int i, int f) {
-    return IntStream.range(i, f).boxed();
   }
 
 }

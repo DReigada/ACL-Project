@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static helpers.StreamHelpers.range;
+import static helpers.StreamHelpers.rangeClosed;
 
 public class Conditions {
   public static int NUM_ROBOTS = 4;
@@ -161,14 +163,6 @@ public class Conditions {
 
   private static Stream<Integer> robotRange() {
     return range(0, NUM_ROBOTS);
-  }
-
-  private static Stream<Integer> range(int i, int f) {
-    return IntStream.range(i, f).boxed();
-  }
-
-  private static Stream<Integer> rangeClosed(int i, int f) {
-    return IntStream.rangeClosed(i, f).boxed();
   }
 
 }
