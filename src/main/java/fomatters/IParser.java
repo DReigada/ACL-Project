@@ -7,10 +7,10 @@ import java.util.List;
 
 public abstract class IParser {
 
-  abstract public ParsedResult parse() throws Exception;
+  abstract public ParsedInput parse() throws Exception;
 
   @Value
-  public class ParsedResult {
+  public class ParsedInput {
     int size;
     List<Position> startingPositions;
     Position objective;

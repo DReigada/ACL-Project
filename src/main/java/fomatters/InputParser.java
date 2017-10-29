@@ -20,7 +20,7 @@ public class InputParser extends IParser {
     reader = new BufferedReader(fileReader);
   }
 
-  public ParsedResult parse() throws IOException {
+  public ParsedInput parse() throws IOException {
     val size = Integer.parseInt(reader.readLine());
 
     List<Position> startingPositions = new ArrayList<>(4);
@@ -37,15 +37,15 @@ public class InputParser extends IParser {
       wallsPositions.add(parseWall(reader.readLine()));
     }
 
-    return new ParsedResult(size, startingPositions, objective, wallsPositions);
+    return new ParsedInput(size, startingPositions, objective, wallsPositions);
   }
 
   private Position parsePosition(String line) {
     Matcher matcher = positionsRegex.matcher(line);
     matcher.find();
     val robot = Robot.fromString(matcher.group(1));
-    val i = Integer.parseInt(matcher.group(2));
-    val j = Integer.parseInt(matcher.group(3));
+    val i = parseIndex(matcher.group(2));
+    val j = parseIndex(matcher.group(3));
 
     return new Position(robot, i, j);
   }
@@ -53,11 +53,15 @@ public class InputParser extends IParser {
   private Wall parseWall(String line) {
     Matcher matcher = wallsRegex.matcher(line);
     matcher.find();
-    val i = Integer.parseInt(matcher.group(1));
-    val j = Integer.parseInt(matcher.group(2));
+    val i = parseIndex(matcher.group(1));
+    val j = parseIndex(matcher.group(2));
     val direction = directionFromString(matcher.group(3));
 
     return new Wall(i, j, direction);
+  }
+
+  private int parseIndex(String str) {
+    return Integer.parseInt(str) - 1;
   }
 
 }
