@@ -1,7 +1,6 @@
 package conditions;
 
 import lombok.val;
-import table.EdgeWithDirection;
 import table.Table;
 import variables.*;
 
@@ -70,8 +69,8 @@ public class Conditions {
 
   public static ClauseFormula noRobotsBetweenOrigAndDest(Table table, int time) {
     Stream<VarClause> clauses = table.getAllEdges()
-        .map(edge -> {
-          Stream<Variable> clauseVars =
+        .flatMap(edge -> {
+          Stream<Variable> vars =
               edge
                   .getStream()
                   .flatMap(cell ->
@@ -80,19 +79,13 @@ public class Conditions {
                               new PositionVar(cell.getId(), robot, time)
                                   .negate()));
 
-          val clause = new VarClause(clauseVars);
-
-          return
+          return vars.map(var ->
               new PossibleMoveVar(edge.getOrig().getId(), edge.getDest().getId(), time)
-                  .implies(clause);
+                  .implies(var));
+
         });
 
     return new ClauseFormula(clauses);
-  }
-
-
-  public void test(EdgeWithDirection edge, int robot) {
-
   }
 
 
