@@ -1,9 +1,15 @@
 package conditions;
 
 import lombok.val;
+import table.ConnectedCell;
 import table.Table;
 import variables.*;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -88,6 +94,70 @@ public class Conditions {
     return new ClauseFormula(clauses);
   }
 
+  public static ClauseFormula test(Table table, int time) {
+    return table.getAllConnectedCells()
+        .flatMap(cell ->
+            robotRange().map(robot ->
+                bla(cell, robot, time)
+            ))
+        .reduce(ClauseFormula.empty(), ClauseFormula::concat);
+  }
+
+
+  private static ClauseFormula bla(ConnectedCell position, int robot, int time) {
+    val positionVarT = new PositionVar(position.getId(), robot, time);
+    val positionVarTPlusOne = new PositionVar(position.getId(), robot, time + 1);
+
+    List<List<Variable>> s = position.listAllConnected().map(edge ->
+        Arrays.asList(
+            new PositionVar(edge.getOrig().getId(), robot, time),
+            new PossibleMoveVar(edge.getOrig().getId(), edge.getOrig().getId(), time),
+            new MovementVar(robot, time))
+    ).collect(Collectors.toList());
+
+    s.add(Collections.singletonList(positionVarT));
+    s.add(Collections.singletonList(positionVarTPlusOne.negate())); // this one implies the rest
+
+    Stream<VarClause> clauses =
+        combinations(s, new LinkedList<>()).stream()
+            .map(l -> new VarClause(l.stream()));
+
+    return new ClauseFormula(clauses);
+  }
+
+  private static List<List<Variable>> combinations(List<List<Variable>> list, List<List<Variable>> acc) {
+    if (list.size() == 0) {
+      return acc;
+    } else if (acc.size() == 0) {
+      val newAcc = head(list).stream()
+          .map(a -> {
+            List<Variable> tempList = new LinkedList<>();
+            tempList.add(a);
+            return tempList;
+          })
+          .collect(Collectors.toList());
+      return combinations(tail(list), newAcc);
+    } else {
+      val t = head(list).stream()
+          .flatMap(var ->
+              acc.stream()
+                  .map(clause -> {
+                        List<Variable> newClause = new LinkedList<>(clause);
+                        newClause.add(var);
+                        return newClause;
+                      }
+                  )).collect(Collectors.toList());
+      return combinations(tail(list), t);
+    }
+  }
+
+  private static <A> A head(List<A> list) {
+    return list.get(0);
+  }
+
+  private static <A> List<A> tail(List<A> list) {
+    return list.subList(1, list.size());
+  }
 
   private static Stream<Integer> robotRange() {
     return range(0, NUM_ROBOTS);
