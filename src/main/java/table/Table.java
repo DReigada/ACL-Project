@@ -8,25 +8,6 @@ import java.util.stream.Stream;
 import static helpers.StreamHelpers.range;
 
 public class Table {
-  public enum Direction {
-    Left, Right, Up, Down;
-
-    public Direction getInverse() {
-      switch (this) {
-        case Up:
-          return Down;
-        case Down:
-          return Up;
-        case Left:
-          return Right;
-        case Right:
-          return Left;
-        default:
-          throw new RuntimeException("Invalid Direction this should never happen");
-      }
-    }
-  }
-
   private ConnectedCell[][] connectedCells;
   private int size;
 
@@ -53,7 +34,6 @@ public class Table {
     connectCells();  // connnect with walls
   }
 
-
   public int getSize() {
     return size;
   }
@@ -69,6 +49,28 @@ public class Table {
         cell.disconnect();
       }
     }
+  }
+
+  public Stream<ConnectedCell> getAllConnectedCells() {
+    return range(0, size).flatMap(i ->
+        range(0, size).map(j -> connectedCells[i][j]));
+  }
+
+  public Stream<EdgeWithDirection> getAllEdges() {
+    return getAllConnectedCells().flatMap(ConnectedCell::listAllConnected);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder str = new StringBuilder();
+    for (int i = 0; i < size; i++) {
+      for (int j = 0; j < size; j++) {
+        str.append(connectedCells[i][j].toString());
+        str.append(" ");
+      }
+      str.append("\n");
+    }
+    return str.toString();
   }
 
   private void connectCells() {
@@ -96,33 +98,24 @@ public class Table {
     }
   }
 
-  public Stream<ConnectedCell> getAllConnectedCells() {
-    return range(0, size).flatMap(i ->
-        range(0, size).map(j -> connectedCells[i][j]));
-  }
 
-  public Stream<EdgeWithDirection> getAllEdges() {
-    return listEdges();
-  }
+  public enum Direction {
+    Left, Right, Up, Down;
 
-  private Stream<EdgeWithDirection> listEdges() {
-    return range(0, size).flatMap(i ->
-        range(0, size).flatMap(j ->
-            connectedCells[i][j].listAllConnected()
-        ));
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder str = new StringBuilder();
-    for (int i = 0; i < size; i++) {
-      for (int j = 0; j < size; j++) {
-        str.append(connectedCells[i][j].toString());
-        str.append(" ");
+    public Direction getInverse() {
+      switch (this) {
+        case Up:
+          return Down;
+        case Down:
+          return Up;
+        case Left:
+          return Right;
+        case Right:
+          return Left;
+        default:
+          throw new RuntimeException("Invalid Direction this should never happen");
       }
-      str.append("\n");
     }
-    return str.toString();
   }
 }
 
