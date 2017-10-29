@@ -1,5 +1,8 @@
 package variables;
 
+import org.sat4j.core.VecInt;
+import org.sat4j.specs.IVecInt;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +43,13 @@ public class ClauseFormula {
 
   public Stream<String> getStringLines() {
     return clauses.map(VarClause::toStringWithNames);
+  }
+
+  public Stream<IVecInt> getClausesAsVecInt() {
+    return
+        clauses
+            .map(VarClause::getIds)
+            .map(VecInt::new);
   }
 
 }
