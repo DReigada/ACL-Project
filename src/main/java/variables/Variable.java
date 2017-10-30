@@ -6,13 +6,10 @@ import lombok.val;
 @EqualsAndHashCode(exclude = {"negated"})
 public abstract class Variable {
 
-  private int time;
-
   private boolean negated;
 
-  protected Variable(int time) {
+  protected Variable() {
     negated = false;
-    this.time = time;
   }
 
   public int id() {
@@ -45,10 +42,6 @@ public abstract class Variable {
   public Variable negate() {
     this.negated = true;
     return this;
-  }
-
-  public int getTime() {
-    return time;
   }
 
   public boolean isNegated() {
