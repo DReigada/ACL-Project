@@ -37,6 +37,7 @@ public class InputParser extends IParser {
       wallsPositions.add(parseWall(reader.readLine()));
     }
 
+    reader.close();
     return new ParsedInput(size, startingPositions, objective, wallsPositions);
   }
 
