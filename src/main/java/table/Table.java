@@ -60,6 +60,11 @@ public class Table {
     return getAllConnectedCells().flatMap(ConnectedCell::listAllConnected);
   }
 
+  public int getCellId(int i, int j) {
+    return (j + 1) + (i * (getSize()));
+  }
+
+
   @Override
   public String toString() {
     StringBuilder str = new StringBuilder();

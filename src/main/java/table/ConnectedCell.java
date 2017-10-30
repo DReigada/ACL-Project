@@ -72,7 +72,7 @@ public class ConnectedCell {
   }
 
   public int getId() {
-    return doGetId(i, j);
+    return table.getCellId(i, j);
   }
 
   public ConnectedCell getNext(Table.Direction dir) {
@@ -88,10 +88,6 @@ public class ConnectedCell {
       default:
         throw new RuntimeException("Invalid WallPosition this should never happen");
     }
-  }
-
-  private int doGetId(int i, int j) {
-    return (j + 1) + (i * (table.getSize()));
   }
 
 
