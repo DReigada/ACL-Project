@@ -9,37 +9,41 @@ import java.util.stream.StreamSupport;
 
 @Value
 public class EdgeWithDirection {
-    ConnectedCell orig, dest;
-    Table.Direction direction;
-    boolean isLast;
+  ConnectedCell orig, dest;
+  Table.Direction direction;
+  boolean isLast;
 
-    public int getNextId() {
-        return dest.getNext(direction).getId();
-    }
+  public int getNextId() {
+    return dest.getNext(direction).getId();
+  }
 
-    public Stream<ConnectedCell> getStream() {
-        val iter = new Iterator<ConnectedCell>() {
-            ConnectedCell currentCell = orig;
+  public Stream<ConnectedCell> getStream() {
+    val iter = new Iterator<ConnectedCell>() {
+      ConnectedCell currentCell = orig;
 
-            @Override
-            public boolean hasNext() {
-                return getNext() != null;
-            }
+      @Override
+      public boolean hasNext() {
+        return getNext() != null;
+      }
 
-            @Override
-            public ConnectedCell next() {
-                val newCell = getNext();
-                currentCell = newCell;
-                return newCell;
-            }
+      @Override
+      public ConnectedCell next() {
+        val newCell = getNext();
+        currentCell = newCell;
+        return newCell;
+      }
 
-            private ConnectedCell getNext() {
-                return currentCell.getNext(direction);
-            }
-        };
+      private ConnectedCell getNext() {
+        if (currentCell.getId() == dest.getId()) {
+          return null;
+        } else {
+          return currentCell.getNext(direction);
+        }
+      }
+    };
 
-        Iterable<ConnectedCell> iterable = () -> iter;
+    Iterable<ConnectedCell> iterable = () -> iter;
 
-        return StreamSupport.stream(iterable.spliterator(), false);
-    }
+    return StreamSupport.stream(iterable.spliterator(), false);
+  }
 }
