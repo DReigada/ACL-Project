@@ -1,5 +1,6 @@
 package conditions;
 
+import fomatters.IParser;
 import lombok.val;
 import table.ConnectedCell;
 import table.Table;
@@ -18,6 +19,24 @@ import static helpers.StreamHelpers.rangeClosed;
 
 public class Conditions {
   public static int NUM_ROBOTS = 4;
+
+  public static ClauseFormula initialPositionFormulae(Table table, IParser.ParsedInput input) {
+    Stream<VarClause> f = input.getStartingPositions().stream()
+        .map(pos -> {
+          val posId = table.getCellId(pos.getI(), pos.getI());
+          val robot = robotToId(pos.getRobot());
+          return new VarClause(new PositionVar(posId, robot, 0));
+        });
+
+    return new ClauseFormula(f);
+  }
+
+  public static VarClause objectiveFormula(Table table, IParser.Position objective, int time) {
+    val posId = table.getCellId(objective.getI(), objective.getJ());
+    val robot = robotToId(objective.getRobot());
+
+    return new VarClause(new PositionVar(posId, robot, time));
+  }
 
   public static ClauseFormula robotMustHavePosition(Table table, int time) {
     int maxPos = table.getMaxPosition();
@@ -165,4 +184,18 @@ public class Conditions {
     return range(0, NUM_ROBOTS);
   }
 
+  private static int robotToId(IParser.Robot robot) {
+    switch (robot) {
+      case Red:
+        return 0;
+      case Yellow:
+        return 1;
+      case Blue:
+        return 2;
+      case Green:
+        return 3;
+      default:
+        throw new RuntimeException("Invalid Robot This should never happen");
+    }
+  }
 }
