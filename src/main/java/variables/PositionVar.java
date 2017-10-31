@@ -1,6 +1,7 @@
 package variables;
 
 import lombok.EqualsAndHashCode;
+import lombok.val;
 
 @EqualsAndHashCode(callSuper = true)
 public class PositionVar extends Variable {
@@ -12,6 +13,16 @@ public class PositionVar extends Variable {
     this.time = t;
     this.j = j;
     this.k = k;
+  }
+
+  @Override
+  public Variable copy() {
+    val mov = new PositionVar(j, k, time);
+    if (isNegated()) {
+      return mov.negated();
+    } else {
+      return mov;
+    }
   }
 
   @Override

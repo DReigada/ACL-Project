@@ -1,5 +1,7 @@
 package variables;
 
+import org.sat4j.core.VecInt;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,5 +36,9 @@ public class VarClause {
 
   public int[] getIds() {
     return vars.mapToInt(Variable::id).toArray();
+  }
+
+  public VecInt asVecInt() {
+    return new VecInt(getIds());
   }
 }

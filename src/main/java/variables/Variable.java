@@ -26,23 +26,32 @@ public abstract class Variable {
   }
 
   public VarClause implies(VarClause clause) {
-    val a = this.negate();
+    val a = this.negated();
     clause.addVariable(a);
     return clause;
   }
 
   public VarClause implies(Variable var) {
-    val a = this.negate();
+    val a = this.negated();
     return new VarClause(a, var);
+  }
+
+  public Variable negated() {
+    val newVar = copy();
+    newVar.negated = true;
+    return newVar;
   }
 
   /**
    * Careful: This changes the state of this object, even tough it returns it
    */
-  public Variable negate() {
-    this.negated = true;
-    return this;
+  public Variable unNegated() {
+    val newVar = copy();
+    newVar.negated = false;
+    return newVar;
   }
+
+  abstract public Variable copy();
 
   public boolean isNegated() {
     return negated;

@@ -1,8 +1,8 @@
 package variables;
 
-import org.sat4j.core.VecInt;
 import org.sat4j.specs.IVecInt;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,10 +17,13 @@ public class ClauseFormula {
     this.clauses = clauses;
   }
 
-  public void addClause(Stream<VarClause> newClauses) {
-    clauses = Stream.concat(clauses, newClauses);
+  public ClauseFormula(VarClause... vars) {
+    this(Arrays.stream(vars));
   }
 
+  public Stream<VarClause> getClauses() {
+    return clauses;
+  }
 
   public static ClauseFormula concat(ClauseFormula form1, ClauseFormula form2) {
     return new ClauseFormula(Stream.concat(form1.clauses, form2.clauses));
@@ -28,6 +31,10 @@ public class ClauseFormula {
 
   public static ClauseFormula empty() {
     return new ClauseFormula();
+  }
+
+  public void addClause(Stream<VarClause> newClauses) {
+    clauses = Stream.concat(clauses, newClauses);
   }
 
   @Override
@@ -46,10 +53,7 @@ public class ClauseFormula {
   }
 
   public Stream<IVecInt> getClausesAsVecInt() {
-    return
-        clauses
-            .map(VarClause::getIds)
-            .map(VecInt::new);
+    return clauses.map(VarClause::asVecInt);
   }
 
 }
