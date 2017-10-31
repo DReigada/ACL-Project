@@ -1,16 +1,14 @@
 package conditions;
 
 import fomatters.IParser;
+import lombok.Value;
 import lombok.val;
 import table.ConnectedCell;
 import table.Table;
 import variables.*;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -58,8 +56,8 @@ public class Conditions {
         robotRange().flatMap(robot ->
             rangeClosed(1, maxPos).flatMap(j ->
                 rangeClosed(j + 1, maxPos).map(l -> {
-                  val var1 = new PositionVar(j, robot, time).negate();
-                  val var2 = new PositionVar(l, robot, time).negate();
+                  val var1 = new PositionVar(j, robot, time).negated();
+                  val var2 = new PositionVar(l, robot, time).negated();
                   return new VarClause(var1, var2);
                 })
             )
@@ -72,8 +70,8 @@ public class Conditions {
     Stream<VarClause> clauses = robotRange()
         .flatMap(k ->
             range(k + 1, NUM_ROBOTS).map(h -> {
-              val var1 = new MovementVar(k, time).negate();
-              val var2 = new MovementVar(h, time).negate();
+              val var1 = new MovementVar(k, time).negated();
+              val var2 = new MovementVar(h, time).negated();
               return new VarClause(var1, var2);
             })
         );
@@ -104,7 +102,7 @@ public class Conditions {
                       robotRange()
                           .map(robot ->
                               new PositionVar(cell.getId(), robot, time)
-                                  .negate()));
+                                  .negated()));
 
           return vars.map(var ->
               new PossibleMoveVar(edge.getOrig().getId(), edge.getDest().getId(), time)
@@ -115,60 +113,70 @@ public class Conditions {
     return new ClauseFormula(clauses);
   }
 
-  public static ClauseFormula test(Table table, int time) {
+  public static ClauseFormula robotEitherMovedOrWasAlreadyInPlace(Table table, int time) {
     return table.getAllConnectedCells()
         .flatMap(cell ->
+            // TODO this could be improved if only done for one robot and then copy for all the others
             robotRange().map(robot ->
-                bla(cell, robot, time)
+                combinationsForCellAndRobot(cell, robot, time)
             ))
         .reduce(ClauseFormula.empty(), ClauseFormula::concat);
   }
 
+  private static ClauseFormula combinationsForCellAndRobot(ConnectedCell position, int robot, int time) {
+    val destinationId = position.getId();
+    Stream<Acc1> s = position.listAllConnected().map(edge -> {
+      // the edges are reversed! the origin is the destination
+      val pos = new PositionVar(edge.getDest().getId(), robot, time);
+      val posMov = new PossibleMoveVar(edge.getDest().getId(), destinationId, time);
+      val mov = new MovementVar(robot, time);
 
-  private static ClauseFormula bla(ConnectedCell position, int robot, int time) {
-    val positionVarT = new PositionVar(position.getId(), robot, time);
-    val positionVarTPlusOne = new PositionVar(position.getId(), robot, time + 1);
+      AuxVar auxVar = new AuxVar(pos, posMov, mov);
+      return new Acc1(auxVar, auxVar.getImplications());
+    });
 
-    List<List<Variable>> s = position.listAllConnected().map(edge ->
-        Arrays.asList(
-            new PositionVar(edge.getOrig().getId(), robot, time),
-            new PossibleMoveVar(edge.getOrig().getId(), edge.getOrig().getId(), time),
-            new MovementVar(robot, time))
-    ).collect(Collectors.toList());
+    Acc2 acc = s.reduce(new Acc2(Stream.empty(), Stream.empty()), Acc2::addTest, Acc2::join);
 
-    s.add(Collections.singletonList(positionVarT));
-    s.add(Collections.singletonList(positionVarTPlusOne.negate())); // this one implies the rest
+    val posT = new PositionVar(position.getId(), robot, time);
+    val posTPlus1 = new PositionVar(position.getId(), robot, time + 1).negated(); // this one implies the rest
 
-    Stream<VarClause> clauses =
-        combinations(s, new LinkedList<>()).stream()
-            .map(l -> new VarClause(l.stream()));
-
-    return new ClauseFormula(clauses);
+    return acc.addAux(posT, posTPlus1).asClauseFormula();
   }
 
-  private static List<List<Variable>> combinations(List<List<Variable>> list, List<List<Variable>> acc) {
-    if (list.size() == 0) {
-      return acc;
-    } else if (acc.size() == 0) {
-      val newAcc = head(list).stream()
-          .map(a -> {
-            List<Variable> tempList = new LinkedList<>();
-            tempList.add(a);
-            return tempList;
-          })
-          .collect(Collectors.toList());
-      return combinations(tail(list), newAcc);
-    } else {
-      val t = head(list).stream()
-          .flatMap(var ->
-              acc.stream()
-                  .map(clause -> {
-                        List<Variable> newClause = new LinkedList<>(clause);
-                        newClause.add(var);
-                        return newClause;
-                      }
-                  )).collect(Collectors.toList());
-      return combinations(tail(list), t);
+
+  // Helper Classes for method conbinationsForCellAndRobot
+  @Value
+  private static class Acc1 {
+    AuxVar auxVar;
+    Stream<VarClause> implications;
+  }
+
+  @Value
+  private static class Acc2 {
+    Stream<Variable> auxVars;
+    Stream<VarClause> implications;
+
+    public Acc2 addAux(Variable... auxs) {
+      val newAuxs = Stream.concat(auxVars, Arrays.stream(auxs));
+      return new Acc2(newAuxs, implications);
+    }
+
+    public Acc2 addTest(Acc1 elem) {
+      val newAuxs = Stream.concat(auxVars, Stream.of(elem.getAuxVar()));
+      val newImpl = Stream.concat(implications, elem.implications);
+      return new Acc2(newAuxs, newImpl);
+    }
+
+    public Acc2 join(Acc2 other) {
+      val newAuxs = Stream.concat(auxVars, other.getAuxVars());
+      val newImpl = Stream.concat(implications, other.getImplications());
+      return new Acc2(newAuxs, newImpl);
+    }
+
+    public ClauseFormula asClauseFormula() {
+      val form = new ClauseFormula(implications);
+      form.addClause(Stream.of(new VarClause(auxVars)));
+      return form;
     }
   }
 
