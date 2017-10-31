@@ -23,7 +23,7 @@ public class Conditions {
   public static ClauseFormula initialPositionFormulae(Table table, IParser.ParsedInput input) {
     Stream<VarClause> f = input.getStartingPositions().stream()
         .map(pos -> {
-          val posId = table.getCellId(pos.getI(), pos.getI());
+          val posId = table.getCellId(pos.getI(), pos.getJ());
           val robot = robotToId(pos.getRobot());
           return new VarClause(new PositionVar(posId, robot, 0));
         });
