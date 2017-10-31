@@ -1,31 +1,27 @@
 package com.dreigada;
 
-import conditions.Conditions;
+import conditions.Solver;
+import fomatters.InputParser;
+import fomatters.OutputFormatter;
 import lombok.val;
-import table.Table;
 
 public class App {
-  public static void main(String[] args) {
-    val table = new Table(3);
-    val c1 = Conditions.robotMustHavePosition(table, 1);
-    val c2 = Conditions.robotCanNotHaveTwoPositions(table, 1);
-    val c3 = Conditions.onlyOneRobotCanMoveEachTimeStep(1);
-    val c4 = Conditions.stopVertex(table, 1);
-    val c5 = Conditions.noRobotsBetweenOrigAndDest(table, 1);
+  public static void main(String[] args) throws Exception {
+    val file = "/Users/dreigada/Downloads/small_puzzle/small_3.rr";
 
-    System.out.println(c5.toStringWithNames());
+    val parsed = new InputParser(file).parse();
 
+    val solver = new Solver(parsed);
 
-//        table.cells[0][0].addWall(Table.Direction.Right);
-//        table.cells[0][1].addWall(Table.Direction.Left);
-//
-//        table.connectCells();
-//
-//        val list = table.listEdges().collect(Collectors.toList());
-//
-//
-//
-//        list.forEach(System.out::println);
+    val maxSteps = 20;
+    val sol = solver.solve(maxSteps);
 
+    if (sol.isPresent()) {
+      val fmt = OutputFormatter.format(sol.get());
+      System.out.println(fmt);
+    } else {
+      System.out.println("Not solution for " + maxSteps + " steps.");
+    }
   }
+
 }

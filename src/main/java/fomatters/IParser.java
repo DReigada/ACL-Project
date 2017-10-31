@@ -47,6 +47,36 @@ public abstract class IParser {
           throw new RuntimeException("Invalid Robot: " + str);
       }
     }
+
+    public int toId() {
+      switch (this) {
+        case Red:
+          return 0;
+        case Yellow:
+          return 1;
+        case Blue:
+          return 2;
+        case Green:
+          return 3;
+        default:
+          throw new RuntimeException("Invalid Robot This should never happen");
+      }
+    }
+
+    public static IParser.Robot fromId(int id) {
+      switch (id) {
+        case 0:
+          return IParser.Robot.Red;
+        case 1:
+          return IParser.Robot.Yellow;
+        case 2:
+          return IParser.Robot.Blue;
+        case 3:
+          return IParser.Robot.Green;
+        default:
+          throw new RuntimeException("Invalid Robot This should never happen");
+      }
+    }
   }
 
   protected Table.Direction directionFromString(String str) {

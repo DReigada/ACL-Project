@@ -22,7 +22,7 @@ public class Conditions {
     Stream<VarClause> f = input.getStartingPositions().stream()
         .map(pos -> {
           val posId = table.getCellId(pos.getI(), pos.getJ());
-          val robot = robotToId(pos.getRobot());
+          val robot = pos.getRobot().toId();
           return new VarClause(new PositionVar(posId, robot, 0));
         });
 
@@ -31,7 +31,7 @@ public class Conditions {
 
   public static VarClause objectiveFormula(Table table, IParser.Position objective, int time) {
     val posId = table.getCellId(objective.getI(), objective.getJ());
-    val robot = robotToId(objective.getRobot());
+    val robot = objective.getRobot().toId();
 
     return new VarClause(new PositionVar(posId, robot, time));
   }
@@ -192,18 +192,4 @@ public class Conditions {
     return range(0, NUM_ROBOTS);
   }
 
-  private static int robotToId(IParser.Robot robot) {
-    switch (robot) {
-      case Red:
-        return 0;
-      case Yellow:
-        return 1;
-      case Blue:
-        return 2;
-      case Green:
-        return 3;
-      default:
-        throw new RuntimeException("Invalid Robot This should never happen");
-    }
-  }
 }

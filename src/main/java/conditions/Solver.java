@@ -1,15 +1,17 @@
 package conditions;
 
 import fomatters.IParser;
-import lombok.val;
+import lombok.*;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 import table.Table;
-import variables.ClauseFormula;
-import variables.VarClause;
+import variables.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static conditions.Conditions.*;
 
@@ -23,20 +25,54 @@ public class Solver {
     solver = SolverFactory.newDefault();
   }
 
-  public int[] solve() throws TimeoutException, ContradictionException {
+  public Optional<List<Move>> solve(int maxSteps) throws TimeoutException, ContradictionException {
     Table table = new Table(input);
 
     // TODO improve this to only add the clauses
-    for (int i = 1; i < 10; i++) {
+    for (int i = 1; i < maxSteps; i++) {
       doSolve(table, i);
 
       if (solver.isSatisfiable()) {
-        System.out.println("Found solution. Steps: " + i);
-        return solver.model();
+        return Optional.of(getMoves(solver.model(), input, table));
       }
     }
 
-    return null;
+    return Optional.empty();
+  }
+
+  private List<Move> getMoves(int[] sol, IParser.ParsedInput input, Table table) {
+    val t = Arrays.stream(sol)
+        .filter(a -> a > 0)
+        .mapToObj(a -> VarMap.getById(Math.abs(a)))
+        .filter(var -> var instanceof MovementVar)
+        .map(var -> (MovementVar) var)
+        .collect(Collectors.toList());
+
+    List<Position> positions =
+        input.getStartingPositions().stream()
+            .map(a -> new Position(a.getRobot(), table.getCellId(a.getI(), a.getJ())))
+            .collect(Collectors.toList());
+
+    List<Move> moves = new LinkedList<>();
+
+    Arrays.stream(sol)
+        .filter(a -> a > 0)
+        .mapToObj(a -> VarMap.getById(Math.abs(a)))
+        .filter(var -> var instanceof PositionVar)
+        .map(var -> (PositionVar) var)
+        .filter(var -> {
+          val test = new MovementVar(var.k, var.time - 1);
+          return t.contains(test);
+        })
+        .sorted(Comparator.comparingInt(a -> a.time))
+        .forEach(var -> {
+          val oldPos = positions.stream().filter(a -> a.robot.toId() == var.k).findFirst().get();
+
+          moves.add(new Move(var.k, var.time, dirFromCoords(oldPos.j, var.j, table)));
+          oldPos.setJ(var.j);
+        });
+
+    return moves;
   }
 
   private void doSolve(Table table, int steps) throws ContradictionException {
@@ -89,6 +125,38 @@ public class Solver {
         System.exit(1);
       }
     });
+  }
+
+  private static Table.Direction dirFromCoords(int from, int to, Table table) {
+    val fromCoords = table.getCoordsFromId(from);
+    val toCoords = table.getCoordsFromId(to);
+
+    if (toCoords[0] - fromCoords[0] > 0) {
+      return Table.Direction.Down;
+    } else if (toCoords[0] - fromCoords[0] < 0) {
+      return Table.Direction.Up;
+    } else if (toCoords[1] - fromCoords[1] > 0) {
+      return Table.Direction.Right;
+    } else if (toCoords[1] - fromCoords[1] < 0) {
+      return Table.Direction.Left;
+    } else {
+      throw new RuntimeException("This should never happen");
+    }
+  }
+
+
+  @Setter
+  @AllArgsConstructor
+  static class Position {
+    IParser.Robot robot;
+    int j;
+  }
+
+  @Value
+  @ToString
+  public static class Move {
+    int robot, time;
+    Table.Direction dir;
   }
 
 }

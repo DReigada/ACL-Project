@@ -6,8 +6,8 @@ import lombok.val;
 @EqualsAndHashCode(callSuper = true)
 public class PositionVar extends Variable {
 
-  private int j, k;
-  private int time;
+  public final int j, k;
+  public final int time;
 
   public PositionVar(int j, int k, int t) {
     this.time = t;

@@ -64,6 +64,10 @@ public class Table {
     return (j + 1) + (i * (getSize()));
   }
 
+  public int[] getCoordsFromId(int id) {
+    return new int[]{id / 8, id % 8 - 1};
+  }
+
 
   @Override
   public String toString() {
