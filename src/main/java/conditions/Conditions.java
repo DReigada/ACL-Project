@@ -114,16 +114,17 @@ public class Conditions {
   }
 
   public static ClauseFormula robotEitherMovedOrWasAlreadyInPlace(Table table, int time) {
-    return table.getAllConnectedCells()
+    Stream<VarClause> t =  table.getAllConnectedCells()
         .flatMap(cell ->
             // TODO this could be improved if only done for one robot and then copy for all the others
-            robotRange().map(robot ->
+            robotRange().flatMap(robot ->
                 combinationsForCellAndRobot(cell, robot, time)
-            ))
-        .reduce(ClauseFormula.empty(), ClauseFormula::concat);
+            ));
+
+    return new ClauseFormula(t);
   }
 
-  private static ClauseFormula combinationsForCellAndRobot(ConnectedCell position, int robot, int time) {
+  private static Stream<VarClause> combinationsForCellAndRobot(ConnectedCell position, int robot, int time) {
     val destinationId = position.getId();
     Stream<Acc1> s = position.listAllConnected().map(edge -> {
       // the edges are reversed! the origin is the destination
@@ -135,12 +136,12 @@ public class Conditions {
       return new Acc1(auxVar, auxVar.getImplications());
     });
 
-    Acc2 acc = s.reduce(new Acc2(Stream.empty(), Stream.empty()), Acc2::addTest, Acc2::join);
+    Acc2 acc = s.reduce(new Acc2(Stream.empty(), Stream.empty()), Acc2::addElement, Acc2::join);
 
     val posT = new PositionVar(position.getId(), robot, time);
     val posTPlus1 = new PositionVar(position.getId(), robot, time + 1).negated(); // this one implies the rest
 
-    return acc.addAux(posT, posTPlus1).asClauseFormula();
+    return acc.addAux(posT, posTPlus1).getClauses();
   }
 
 
@@ -161,7 +162,7 @@ public class Conditions {
       return new Acc2(newAuxs, implications);
     }
 
-    public Acc2 addTest(Acc1 elem) {
+    public Acc2 addElement(Acc1 elem) {
       val newAuxs = Stream.concat(auxVars, Stream.of(elem.getAuxVar()));
       val newImpl = Stream.concat(implications, elem.implications);
       return new Acc2(newAuxs, newImpl);
@@ -173,10 +174,8 @@ public class Conditions {
       return new Acc2(newAuxs, newImpl);
     }
 
-    public ClauseFormula asClauseFormula() {
-      val form = new ClauseFormula(implications);
-      form.addClause(Stream.of(new VarClause(auxVars)));
-      return form;
+    public Stream<VarClause> getClauses() {
+      return Stream.concat(implications, Stream.of(new VarClause(auxVars)));
     }
   }
 

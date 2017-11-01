@@ -25,10 +25,6 @@ public class ClauseFormula {
     return clauses;
   }
 
-  public static ClauseFormula concat(ClauseFormula form1, ClauseFormula form2) {
-    return new ClauseFormula(Stream.concat(form1.clauses, form2.clauses));
-  }
-
   public static ClauseFormula empty() {
     return new ClauseFormula();
   }
