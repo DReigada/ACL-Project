@@ -8,9 +8,16 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 import table.Table;
-import variables.*;
+import variables.ClauseFormula;
+import variables.PositionVar;
+import variables.VarClause;
+import variables.VarMap;
 
-import java.util.*;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static conditions.Conditions.*;
@@ -33,46 +40,11 @@ public class Solver {
       doSolve(table, i);
 
       if (solver.isSatisfiable()) {
-        return Optional.of(getMoves(solver.model(), input, table));
+        return Optional.of(getMoves(solver.model(), table));
       }
     }
 
     return Optional.empty();
-  }
-
-  private List<Move> getMoves(int[] sol, IParser.ParsedInput input, Table table) {
-    val t = Arrays.stream(sol)
-        .filter(a -> a > 0)
-        .mapToObj(a -> VarMap.getById(Math.abs(a)))
-        .filter(var -> var instanceof MovementVar)
-        .map(var -> (MovementVar) var)
-        .collect(Collectors.toList());
-
-    List<Position> positions =
-        input.getStartingPositions().stream()
-            .map(a -> new Position(a.getRobot(), table.getCellId(a.getI(), a.getJ())))
-            .collect(Collectors.toList());
-
-    List<Move> moves = new LinkedList<>();
-
-    Arrays.stream(sol)
-        .filter(a -> a > 0)
-        .mapToObj(a -> VarMap.getById(Math.abs(a)))
-        .filter(var -> var instanceof PositionVar)
-        .map(var -> (PositionVar) var)
-        .filter(var -> {
-          val test = new MovementVar(var.k, var.time - 1);
-          return t.contains(test);
-        })
-        .sorted(Comparator.comparingInt(a -> a.time))
-        .forEach(var -> {
-          val oldPos = positions.stream().filter(a -> a.robot.toId() == var.k).findFirst().get();
-
-          moves.add(new Move(var.k, var.time, dirFromCoords(oldPos.j, var.j, table)));
-          oldPos.setJ(var.j);
-        });
-
-    return moves;
   }
 
   private void doSolve(Table table, int steps) throws ContradictionException {
@@ -94,6 +66,17 @@ public class Solver {
       val c4 = stopVertex(table, time);
       addFormula(c4);
 
+      try {
+        PrintWriter writer = new PrintWriter("test.txt");
+
+        stopVertex(table, time).getClauses().map(VarClause::toStringWithNames).forEach(writer::println);
+
+        writer.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+
       val c3 = onlyOneRobotCanMoveEachTimeStep(time);
       addFormula(c3);
 
@@ -108,6 +91,40 @@ public class Solver {
 
     val obj = objectiveFormula(table, input.getObjective(), steps);
     addClause(obj);
+  }
+
+
+  private List<Move> getMoves(int[] sol, Table table) {
+    val positions = Arrays.stream(sol)
+        .filter(a -> a > 0)
+        .mapToObj(a -> VarMap.getById(Math.abs(a)))
+        .filter(var -> var instanceof PositionVar)
+        .map(var -> (PositionVar) var)
+        .collect(Collectors.toList());
+
+    positions.forEach(System.out::println);
+
+    return listMovesFromPositions(positions, table);
+  }
+
+  private List<Move> listMovesFromPositions(List<PositionVar> positions, Table table) {
+    PositionVar[] lastPositions = new PositionVar[4];
+    List<Move> moves = new LinkedList<>();
+
+    for (PositionVar currentPosition : positions) {
+      val robotId = currentPosition.k;
+
+      PositionVar lastPosition = lastPositions[robotId];
+
+      if (lastPosition != null && lastPosition.j != currentPosition.j) { //robot moved
+        val dir = dirFromCoords(lastPosition.j, currentPosition.j, table);
+        moves.add(new Move(robotId, currentPosition.time, dir));
+      }
+
+      lastPositions[robotId] = currentPosition;
+    }
+
+    return moves;
   }
 
 
