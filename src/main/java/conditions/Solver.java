@@ -36,7 +36,7 @@ public class Solver {
     Table table = new Table(input);
 
     // TODO improve this to only add the clauses
-    for (int i = 1; i < maxSteps; i++) {
+    for (int i = 0; i < maxSteps; i++) {
       doSolve(table, i);
 
       if (solver.isSatisfiable()) {
