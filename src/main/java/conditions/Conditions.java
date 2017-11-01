@@ -18,7 +18,7 @@ import static helpers.StreamHelpers.rangeClosed;
 public class Conditions {
   public static int NUM_ROBOTS = 4;
 
-  public static ClauseFormula initialPositionFormulae(Table table, IParser.ParsedInput input) {
+  public static ClauseFormula initialPositionFormula(Table table, IParser.ParsedInput input) {
     Stream<VarClause> f = input.getStartingPositions().stream()
         .map(pos -> {
           val posId = table.getCellId(pos.getI(), pos.getJ());

@@ -1,19 +1,18 @@
 package conditions;
 
 import fomatters.IParser;
-import lombok.*;
+import lombok.ToString;
+import lombok.Value;
+import lombok.val;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 import table.Table;
 import variables.ClauseFormula;
 import variables.PositionVar;
-import variables.VarClause;
 import variables.VarMap;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,67 +22,49 @@ import java.util.stream.Collectors;
 import static conditions.Conditions.*;
 
 public class Solver {
-  private ISolver solver;
-  private IParser.ParsedInput input;
-
+  private final IParser.ParsedInput input;
+  private final Table table;
+  private final ISolver solver;
 
   public Solver(IParser.ParsedInput input) {
     this.input = input;
+    table = new Table(input);
     solver = SolverFactory.newDefault();
   }
 
   public Optional<List<Move>> solve(int maxSteps) throws TimeoutException, ContradictionException {
-    Table table = new Table(input);
+    return doSolve(table, maxSteps).map(this::toMoves);
+  }
 
-    // TODO improve this to only add the clauses
-    for (int i = 0; i < maxSteps; i++) {
-      doSolve(table, i);
+  private Optional<int[]> doSolve(Table table, int maxSteps) throws TimeoutException {
 
-      if (solver.isSatisfiable()) {
-        return Optional.of(getMoves(solver.model(), table));
+    addFormula(initialPositionFormula(table, input));
+
+    for (int stepN = 0; stepN <= maxSteps; stepN++) {
+      // these go from 0 to maxSteps
+      addFormula(robotMustHavePosition(table, stepN));
+      addFormula(robotCanNotHaveTwoPositions(table, stepN));
+      val sat = solver.isSatisfiable(objectiveFormula(table, input.getObjective(), stepN).asVecInt());
+
+      if (sat) {
+        return Optional.of(solver.model());
+      } else if (stepN == maxSteps) {
+        return Optional.empty();
       }
+
+      // these only go from 0 to maxSteps - 1
+      addFormula(robotMustHavePosition(table, stepN));
+      addFormula(robotCanNotHaveTwoPositions(table, stepN));
+      addFormula(robotEitherMovedOrWasAlreadyInPlace(table, stepN));
+      addFormula(noRobotsBetweenOrigAndDest(table, stepN));
+      addFormula(stopVertex(table, stepN));
+      addFormula(onlyOneRobotCanMoveEachTimeStep(stepN));
     }
 
     return Optional.empty();
   }
 
-  private void doSolve(Table table, int steps) throws ContradictionException {
-    solver.reset();
-
-    for (int time = 0; time < steps; time++) {
-      val c1 = robotMustHavePosition(table, time);
-      addFormula(c1);
-
-      val c2 = robotCanNotHaveTwoPositions(table, time);
-      addFormula(c2);
-
-      val c6 = robotEitherMovedOrWasAlreadyInPlace(table, time);
-      addFormula(c6);
-
-      val c5 = noRobotsBetweenOrigAndDest(table, time);
-      addFormula(c5);
-
-      val c4 = stopVertex(table, time);
-      addFormula(c4);
-
-      val c3 = onlyOneRobotCanMoveEachTimeStep(time);
-      addFormula(c3);
-
-    }
-    val c11 = robotMustHavePosition(table, steps);
-    addFormula(c11);
-    val c21 = robotCanNotHaveTwoPositions(table, steps);
-    addFormula(c21);
-
-    val init = initialPositionFormulae(table, input);
-    addFormula(init);
-
-    val obj = objectiveFormula(table, input.getObjective(), steps);
-    addClause(obj);
-  }
-
-
-  private List<Move> getMoves(int[] sol, Table table) {
+  private List<Move> toMoves(int[] sol) {
     val positions = Arrays.stream(sol)
         .filter(a -> a > 0)
         .mapToObj(a -> VarMap.getById(Math.abs(a)))
@@ -91,10 +72,10 @@ public class Solver {
         .map(var -> (PositionVar) var)
         .collect(Collectors.toList());
 
-    return listMovesFromPositions(positions, table);
+    return listMovesFromPositions(positions);
   }
 
-  private List<Move> listMovesFromPositions(List<PositionVar> positions, Table table) {
+  private List<Move> listMovesFromPositions(List<PositionVar> positions) {
     PositionVar[] lastPositions = new PositionVar[4];
     List<Move> moves = new LinkedList<>();
 
@@ -104,7 +85,7 @@ public class Solver {
       PositionVar lastPosition = lastPositions[robotId];
 
       if (lastPosition != null && lastPosition.j != currentPosition.j) { //robot moved
-        val dir = dirFromCoords(lastPosition.j, currentPosition.j, table);
+        val dir = directionFromCoords(lastPosition.j, currentPosition.j, table);
         moves.add(new Move(robotId, currentPosition.time, dir));
       }
 
@@ -114,16 +95,10 @@ public class Solver {
     return moves;
   }
 
-
-  private IConstr addClause(VarClause clause) throws ContradictionException {
-    return solver.addClause(clause.asVecInt());
-  }
-
-
   private void addFormula(ClauseFormula formula) {
     formula.getClauses().forEach(clause -> {
       try {
-        addClause(clause);
+        solver.addClause(clause.asVecInt());
       } catch (ContradictionException e) {
         e.printStackTrace();
         System.exit(1);
@@ -131,7 +106,7 @@ public class Solver {
     });
   }
 
-  private static Table.Direction dirFromCoords(int from, int to, Table table) {
+  private static Table.Direction directionFromCoords(int from, int to, Table table) {
     val fromCoords = table.getCoordsFromId(from);
     val toCoords = table.getCoordsFromId(to);
 
@@ -146,14 +121,6 @@ public class Solver {
     } else {
       throw new RuntimeException("This should never happen");
     }
-  }
-
-
-  @Setter
-  @AllArgsConstructor
-  static class Position {
-    IParser.Robot robot;
-    int j;
   }
 
   @Value
