@@ -29,11 +29,11 @@ public class Conditions {
     return new ClauseFormula(f);
   }
 
-  public static VarClause objectiveFormula(Table table, IParser.Position objective, int time) {
+  public static Variable objectiveFormula(Table table, IParser.Position objective, int time) {
     val posId = table.getCellId(objective.getI(), objective.getJ());
     val robot = objective.getRobot().toId();
 
-    return new VarClause(new PositionVar(posId, robot, time));
+    return new PositionVar(posId, robot, time);
   }
 
   public static ClauseFormula robotMustHavePosition(Table table, int time) {
@@ -114,7 +114,7 @@ public class Conditions {
   }
 
   public static ClauseFormula robotEitherMovedOrWasAlreadyInPlace(Table table, int time) {
-    Stream<VarClause> t =  table.getAllConnectedCells()
+    Stream<VarClause> t = table.getAllConnectedCells()
         .flatMap(cell ->
             // TODO this could be improved if only done for one robot and then copy for all the others
             robotRange().flatMap(robot ->
