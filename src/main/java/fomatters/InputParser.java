@@ -15,8 +15,8 @@ public class InputParser extends IParser {
   Pattern positionsRegex = Pattern.compile("([RYGB]) (\\d*) (\\d*)");
   Pattern wallsRegex = Pattern.compile("(\\d*) (\\d*) ([udlr])");
 
-  public InputParser(String filename) throws FileNotFoundException {
-    val fileReader = new FileReader(new File(filename));
+  public InputParser(File file) throws FileNotFoundException {
+    val fileReader = new FileReader(file);
     reader = new BufferedReader(fileReader);
   }
 

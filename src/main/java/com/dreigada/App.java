@@ -5,10 +5,18 @@ import fomatters.InputParser;
 import fomatters.OutputFormatter;
 import lombok.val;
 
+import java.io.File;
+
 public class App {
   public static void main(String[] args) throws Exception {
-    val file = "/Users/dreigada/Downloads/small_puzzle/small_3.rr";
+    if (args.length < 1) {
+      System.out.println("Missing argument: input file");
+      System.exit(1);
+    }
 
+    long startTime = System.currentTimeMillis();
+
+    val file = new File(args[0]);
     val parsed = new InputParser(file).parse();
 
     val solver = new Solver(parsed);
@@ -20,8 +28,15 @@ public class App {
       val fmt = OutputFormatter.format(sol.get());
       System.out.println(fmt);
     } else {
-      System.out.println("Not solution for " + maxSteps + " steps.");
+      System.out.println("No solution for " + maxSteps + " steps.");
     }
+
+
+    long endTime = System.currentTimeMillis();
+    long duration = (endTime - startTime);
+
+    System.err.println("Duration: " + duration);
+
   }
 
 }
