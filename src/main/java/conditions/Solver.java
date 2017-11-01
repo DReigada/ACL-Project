@@ -66,17 +66,6 @@ public class Solver {
       val c4 = stopVertex(table, time);
       addFormula(c4);
 
-      try {
-        PrintWriter writer = new PrintWriter("test.txt");
-
-        stopVertex(table, time).getClauses().map(VarClause::toStringWithNames).forEach(writer::println);
-
-        writer.close();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-
-
       val c3 = onlyOneRobotCanMoveEachTimeStep(time);
       addFormula(c3);
 
@@ -101,8 +90,6 @@ public class Solver {
         .filter(var -> var instanceof PositionVar)
         .map(var -> (PositionVar) var)
         .collect(Collectors.toList());
-
-    positions.forEach(System.out::println);
 
     return listMovesFromPositions(positions, table);
   }
