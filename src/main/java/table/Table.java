@@ -65,7 +65,7 @@ public class Table {
   }
 
   public int[] getCoordsFromId(int id) {
-    return new int[]{id / 8, id % 8 - 1};
+    return new int[]{((id - 1) / size), (id - 1) % size};
   }
 
 
