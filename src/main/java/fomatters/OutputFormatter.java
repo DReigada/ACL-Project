@@ -1,6 +1,6 @@
 package fomatters;
 
-import conditions.Solver;
+import conditions.AbstractSolver;
 import lombok.val;
 
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class OutputFormatter {
 
-  public static String format(List<Solver.Move> moves) {
+  public static String format(List<AbstractSolver.Move> moves) {
     val numberMoves = moves.size();
 
     val movesStr = moves.stream()

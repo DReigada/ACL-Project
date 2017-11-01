@@ -4,10 +4,6 @@ import fomatters.IParser;
 import lombok.ToString;
 import lombok.Value;
 import lombok.val;
-import org.sat4j.minisat.SolverFactory;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.ISolver;
-import org.sat4j.specs.TimeoutException;
 import table.Table;
 import variables.ClauseFormula;
 import variables.PositionVar;
@@ -21,22 +17,31 @@ import java.util.stream.Collectors;
 
 import static conditions.Conditions.*;
 
-public class Solver {
-  private final IParser.ParsedInput input;
-  private final Table table;
-  private final ISolver solver;
+public abstract class AbstractSolver {
+  protected final IParser.ParsedInput input;
+  protected final Table table;
 
-  public Solver(IParser.ParsedInput input) {
-    this.input = input;
-    table = new Table(input);
-    solver = SolverFactory.newDefault();
+  @Value
+  @ToString
+  public static class Move {
+    int robot, time;
+    Table.Direction dir;
   }
 
-  public Optional<List<Move>> solve(int maxSteps) throws TimeoutException, ContradictionException {
+  public AbstractSolver(IParser.ParsedInput input) {
+    this.input = input;
+    table = new Table(input);
+  }
+
+  protected abstract Optional<int[]> getModel(int[] assumption) throws Exception;
+
+  protected abstract void addFormula(ClauseFormula formula);
+
+  public Optional<List<Move>> solve(int maxSteps) throws Exception {
     return doSolve(table, maxSteps).map(this::toMoves);
   }
 
-  private Optional<int[]> doSolve(Table table, int maxSteps) throws TimeoutException {
+  private Optional<int[]> doSolve(Table table, int maxSteps) throws Exception {
 
     addFormula(initialPositionFormula(table, input));
 
@@ -44,17 +49,15 @@ public class Solver {
       // these go from 0 to maxSteps
       addFormula(robotMustHavePosition(table, stepN));
       addFormula(robotCanNotHaveTwoPositions(table, stepN));
-      val sat = solver.isSatisfiable(objectiveFormula(table, input.getObjective(), stepN).asVecInt());
 
-      if (sat) {
-        return Optional.of(solver.model());
+      val model = getModel(objectiveFormula(table, input.getObjective(), stepN).getIds());
+      if (model.isPresent()) {
+        return model;
       } else if (stepN == maxSteps) {
         return Optional.empty();
       }
 
       // these only go from 0 to maxSteps - 1
-      addFormula(robotMustHavePosition(table, stepN));
-      addFormula(robotCanNotHaveTwoPositions(table, stepN));
       addFormula(robotEitherMovedOrWasAlreadyInPlace(table, stepN));
       addFormula(noRobotsBetweenOrigAndDest(table, stepN));
       addFormula(stopVertex(table, stepN));
@@ -63,6 +66,7 @@ public class Solver {
 
     return Optional.empty();
   }
+
 
   private List<Move> toMoves(int[] sol) {
     val positions = Arrays.stream(sol)
@@ -95,16 +99,6 @@ public class Solver {
     return moves;
   }
 
-  private void addFormula(ClauseFormula formula) {
-    formula.getClauses().forEach(clause -> {
-      try {
-        solver.addClause(clause.asVecInt());
-      } catch (ContradictionException e) {
-        e.printStackTrace();
-        System.exit(1);
-      }
-    });
-  }
 
   private static Table.Direction directionFromCoords(int from, int to, Table table) {
     val fromCoords = table.getCoordsFromId(from);
@@ -121,13 +115,6 @@ public class Solver {
     } else {
       throw new RuntimeException("This should never happen");
     }
-  }
-
-  @Value
-  @ToString
-  public static class Move {
-    int robot, time;
-    Table.Direction dir;
   }
 
 }

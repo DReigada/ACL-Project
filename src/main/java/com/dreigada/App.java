@@ -1,6 +1,6 @@
 package com.dreigada;
 
-import conditions.Solver;
+import conditions.Sat4JSolver;
 import fomatters.InputParser;
 import fomatters.OutputFormatter;
 import lombok.val;
@@ -19,7 +19,7 @@ public class App {
     val file = new File(args[0]);
     val parsed = new InputParser(file).parse();
 
-    val solver = new Solver(parsed);
+    val solver = new Sat4JSolver(parsed);
 
     val maxSteps = 20;
     val sol = solver.solve(maxSteps);
