@@ -1,6 +1,10 @@
 package com.dreigada;
 
+import conditions.AbstractSolver;
+import conditions.ExternalSolverRunner;
 import conditions.Sat4JSolver;
+import conditions.externalSolvers.LingelingSolver;
+import fomatters.IParser;
 import fomatters.InputParser;
 import fomatters.OutputFormatter;
 import lombok.val;
@@ -14,13 +18,53 @@ public class App {
       System.exit(1);
     }
 
-    long startTime = System.currentTimeMillis();
-
     val file = new File(args[0]);
-    val parsed = new InputParser(file).parse();
+    val input = new InputParser(file).parse();
 
-    val solver = new Sat4JSolver(parsed);
+    time("Sat4J", () -> runSat4J(input));
+    time("Lingeling", () -> runLingeling(input, "/Users/dreigada/IST/ALC/labs/lingeling/lingeling"));
+  }
 
+  private static void time(String nameOpt, Runnable f) {
+    val startTime = System.currentTimeMillis();
+    f.run();
+    val endTime = System.currentTimeMillis();
+    val duration = (endTime - startTime);
+
+    String maybeName = "";
+    if (!nameOpt.isEmpty()) {
+      maybeName = " [" + nameOpt + "]";
+    }
+    System.err.println("Duration" + maybeName + ": " + duration);
+  }
+
+  private static void time(Runnable f) {
+    time("", f);
+  }
+
+  private static void runLingeling(IParser.ParsedInput input, String pathToExec) {
+    try {
+      val lingeling = new LingelingSolver(pathToExec);
+      val solver = new ExternalSolverRunner(input, "bla.out", lingeling);
+      run(solver);
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+
+  }
+
+  private static void runSat4J(IParser.ParsedInput input) {
+    try {
+      val solver = new Sat4JSolver(input);
+      run(solver);
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+  }
+
+  private static void run(AbstractSolver solver) throws Exception {
     val maxSteps = 20;
     val sol = solver.solve(maxSteps);
 
@@ -30,13 +74,6 @@ public class App {
     } else {
       System.out.println("No solution for " + maxSteps + " steps.");
     }
-
-
-    long endTime = System.currentTimeMillis();
-    long duration = (endTime - startTime);
-
-    System.err.println("Duration: " + duration);
-
   }
 
 }
