@@ -50,7 +50,7 @@ public abstract class AbstractSolver {
       addFormula(robotMustHavePosition(table, stepN));
       addFormula(robotCanNotHaveTwoPositions(table, stepN));
 
-      val model = getModel(objectiveFormula(table, input.getObjective(), stepN).getIds());
+      val model = getModel(new int[]{objectiveFormula(table, input.getObjective(), stepN).id()});
       if (model.isPresent()) {
         return model;
       } else if (stepN == maxSteps) {

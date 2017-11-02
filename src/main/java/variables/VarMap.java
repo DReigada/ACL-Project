@@ -9,4 +9,8 @@ final public class VarMap {
   public static Variable getById(int id) {
     return map.inverse().get(id).unNegated();
   }
+
+  public static int size() {
+    return map.size();
+  }
 }
