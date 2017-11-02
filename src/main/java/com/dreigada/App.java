@@ -13,33 +13,52 @@ import java.io.File;
 
 public class App {
   public static void main(String[] args) throws Exception {
-    if (args.length < 1) {
-      System.out.println("Missing argument: input file");
+    if (args.length == 0) {
+      System.out.println("Missing arguments");
       System.exit(1);
     }
 
-    val file = new File(args[0]);
-    val input = new InputParser(file).parse();
+    int timedOffset = 0;
 
-    time("Sat4J", () -> runSat4J(input));
-    time("Lingeling", () -> runLingeling(input, "/Users/dreigada/IST/ALC/labs/lingeling/lingeling"));
+    if (args[0].equals("--timed")) {
+      timedOffset = 1;
+    }
+
+    val runner = runnner(args, timedOffset);
+
+    if (timedOffset == 1) {
+      timed(runner);
+    } else {
+      runner.run();
+    }
+
   }
 
-  private static void time(String nameOpt, Runnable f) {
+  private static Runnable runnner(String[] args, int timedOffset) {
+    return () -> {
+      try {
+        val file = new File(args[timedOffset]);
+        val input = new InputParser(file).parse();
+
+        if (args.length == 2 + timedOffset) {
+          runLingeling(input, args[1 + timedOffset]);
+        } else {
+          runSat4J(input);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        System.exit(1);
+      }
+    };
+  }
+
+  private static void timed(Runnable f) {
     val startTime = System.currentTimeMillis();
     f.run();
     val endTime = System.currentTimeMillis();
     val duration = (endTime - startTime);
 
-    String maybeName = "";
-    if (!nameOpt.isEmpty()) {
-      maybeName = " [" + nameOpt + "]";
-    }
-    System.err.println("Duration" + maybeName + ": " + duration);
-  }
-
-  private static void time(Runnable f) {
-    time("", f);
+    System.err.println("Duration: " + duration);
   }
 
   private static void runLingeling(IParser.ParsedInput input, String pathToExec) {
