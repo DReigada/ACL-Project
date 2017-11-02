@@ -1,7 +1,7 @@
-# ACL-Project
- Algorithms for Computational Logic Project
+# ACL-Project1
+ Algorithms for Computational Logic Project part 1
  
- ### To compile:
+ ### To compile (the project and lingeling):
  ./compile.sh
  
  ### To run using the lingeling compiled with the compile script:
