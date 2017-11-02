@@ -64,7 +64,7 @@ public class App {
   private static void runLingeling(IParser.ParsedInput input, String pathToExec) {
     try {
       val lingeling = new LingelingSolver(pathToExec);
-      val solver = new ExternalSolverRunner(input, "bla.out", lingeling);
+      val solver = new ExternalSolverRunner(input, "tmp/lingeling.input", lingeling);
       run(solver);
     } catch (Exception e) {
       e.printStackTrace();
