@@ -1,4 +1,4 @@
-package conditions;
+package solver;
 
 import fomatters.IParser;
 import lombok.val;

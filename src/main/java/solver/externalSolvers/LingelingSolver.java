@@ -1,4 +1,4 @@
-package conditions.externalSolvers;
+package solver.externalSolvers;
 
 import lombok.val;
 

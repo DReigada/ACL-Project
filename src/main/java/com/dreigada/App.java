@@ -1,9 +1,9 @@
 package com.dreigada;
 
-import conditions.AbstractSolver;
-import conditions.ExternalSolverRunner;
-import conditions.Sat4JSolver;
-import conditions.externalSolvers.LingelingSolver;
+import solver.AbstractSolver;
+import solver.ExternalSolverRunner;
+import solver.Sat4JSolver;
+import solver.externalSolvers.LingelingSolver;
 import fomatters.IParser;
 import fomatters.InputParser;
 import fomatters.OutputFormatter;

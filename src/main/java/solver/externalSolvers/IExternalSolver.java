@@ -1,4 +1,4 @@
-package conditions.externalSolvers;
+package solver.externalSolvers;
 
 import java.io.File;
 import java.io.IOException;

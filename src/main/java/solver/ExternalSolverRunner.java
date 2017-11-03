@@ -1,7 +1,7 @@
-package conditions;
+package solver;
 
 import com.google.common.io.ByteStreams;
-import conditions.externalSolvers.IExternalSolver;
+import solver.externalSolvers.IExternalSolver;
 import fomatters.IParser;
 import lombok.val;
 import variables.ClauseFormula;
@@ -39,7 +39,7 @@ public class ExternalSolverRunner extends AbstractSolver {
   private File prepareFile(int[] assumptions) throws IOException {
     writer.flush();
 
-    val newFile = new File(tmpFile.getName() + ".foo");
+    val newFile = new File(tmpFile.getName() + ".tmp");
     newFile.delete();
 
     val header = "p cnf " + VarMap.size() + " " + (lineCount.get() + assumptions.length) + "\n";
