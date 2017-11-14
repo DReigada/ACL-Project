@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MovementConditionsGenerator {
-  public static Stream<String> generate(Table table) {
+  public static Stream<String> generateMovementConditions(Table table) {
     Stream<EdgeWithDirection> edges =
         table
             .getAllEdges();

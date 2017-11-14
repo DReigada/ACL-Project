@@ -11,13 +11,19 @@ public class PositionConditionsGenerator {
   private static final String USED_TIME = "usedTime";
 
 
-  public static Stream<String> generate(IParser.ParsedInput input, Table table) {
-    Stream<String> initialPosConditions = input.getStartingPositions().stream()
-        .map(pos -> positionAssert(pos, "0", table));
+  public static Stream<String> generateMaxPosition(Table table) {
+    return Stream.of(Integer.toString(table.getMaxPosition()));
+  }
 
+  public static Stream<String> generateInitialPositions(IParser.ParsedInput input, Table table) {
+    return input.getStartingPositions().stream()
+        .map(pos -> positionAssert(pos, "0", table));
+  }
+
+  public static Stream<String> generateObjectivePosition(IParser.ParsedInput input, Table table) {
     String objectivePosCondition = positionAssert(input.getObjective(), USED_TIME, table);
 
-    return Stream.concat(initialPosConditions, Stream.of(objectivePosCondition));
+    return Stream.of(objectivePosCondition);
   }
 
 
