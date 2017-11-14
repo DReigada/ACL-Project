@@ -1,4 +1,4 @@
-package solver.externalSolvers;
+package sat.solver.externalSolvers;
 
 import lombok.val;
 

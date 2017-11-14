@@ -1,7 +1,7 @@
-package solver;
+package sat.solver;
 
 import com.google.common.io.ByteStreams;
-import solver.externalSolvers.IExternalSolver;
+import sat.solver.externalSolvers.IExternalSolver;
 import fomatters.IParser;
 import lombok.val;
 import variables.ClauseFormula;

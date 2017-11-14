@@ -1,4 +1,4 @@
-package solver;
+package sat.solver;
 
 import fomatters.IParser;
 import lombok.val;
