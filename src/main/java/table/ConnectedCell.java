@@ -5,6 +5,7 @@ import lombok.val;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ConnectedCell {
@@ -76,20 +77,23 @@ public class ConnectedCell {
   }
 
   public ConnectedCell getNext(Table.Direction dir) {
+    return getNextOpt(dir).orElse(null);
+  }
+
+  public Optional<ConnectedCell> getNextOpt(Table.Direction dir) {
     switch (dir) {
       case Up:
-        return up;
+        return Optional.ofNullable(up);
       case Down:
-        return down;
+        return Optional.ofNullable(down);
       case Left:
-        return left;
+        return Optional.ofNullable(left);
       case Right:
-        return right;
+        return Optional.ofNullable(right);
       default:
         throw new RuntimeException("Invalid WallPosition this should never happen");
     }
   }
-
 
   private List<EdgeWithDirection> listConnected(Table.Direction dir) {
     ConnectedCell next = getNext(dir);
@@ -104,14 +108,6 @@ public class ConnectedCell {
     }
 
     return acc;
-  }
-
-  public String toString2() {
-    return "{" +
-        "i=" + i +
-        ", j=" + j +
-        ", id=" + getId() +
-        '}';
   }
 
   @Override
