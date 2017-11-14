@@ -1,4 +1,4 @@
-package variables;
+package sat.variables;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

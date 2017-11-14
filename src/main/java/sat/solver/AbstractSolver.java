@@ -5,9 +5,9 @@ import lombok.ToString;
 import lombok.Value;
 import lombok.val;
 import table.Table;
-import variables.ClauseFormula;
-import variables.PositionVar;
-import variables.VarMap;
+import sat.variables.ClauseFormula;
+import sat.variables.PositionVar;
+import sat.variables.VarMap;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static conditions.Conditions.*;
+import static sat.conditions.Conditions.*;
 
 public abstract class AbstractSolver {
   protected final IParser.ParsedInput input;

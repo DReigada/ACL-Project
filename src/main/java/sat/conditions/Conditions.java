@@ -1,11 +1,11 @@
-package conditions;
+package sat.conditions;
 
 import fomatters.IParser;
 import lombok.Value;
 import lombok.val;
 import table.ConnectedCell;
 import table.Table;
-import variables.*;
+import sat.variables.*;
 
 import java.util.Arrays;
 import java.util.List;
