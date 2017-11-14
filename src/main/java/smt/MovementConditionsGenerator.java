@@ -1,19 +1,18 @@
 package smt;
 
-import fomatters.InputParser;
-import lombok.AllArgsConstructor;
 import lombok.val;
+import smt.types.Movement;
+import smt.types.Position;
 import table.ConnectedCell;
 import table.EdgeWithDirection;
 import table.Table;
 
-import java.io.File;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MovementConditionsGenerator {
-  public static Stream<String> noRobotsBetweenOrigAndDest(Table table) {
+  public static Stream<String> generate(Table table) {
     Stream<EdgeWithDirection> edges =
         table
             .getAllEdges();
@@ -59,47 +58,6 @@ public class MovementConditionsGenerator {
 
   private static Position cellToPosition(ConnectedCell cell) {
     return new Position(cell.getId());
-  }
-
-  @AllArgsConstructor
-  static class Movement {
-    final Position orig, dest;
-
-    @Override
-    public String toString() {
-      return "(Movement " + orig + " " + dest + ')';
-    }
-
-    public String compareToMovStr() {
-      return "(= mov " + toString() + ")";
-    }
-  }
-
-
-  @AllArgsConstructor
-  static class Position {
-    final int j;
-
-    @Override
-    public String toString() {
-      return "(Position " + j + ')';
-    }
-
-    public String isPositionFilledStr() {
-      return "(isPositionFilled " + toString() + " time)";
-    }
-  }
-
-  public static void main(String[] args) throws Exception {
-
-    val file = new File("/Users/dreigada/IST/ALC/puzzles/small_puzzle/my.rr");
-    val input = new InputParser(file).parse();
-    val table = new Table(input);
-
-
-    val test = noRobotsBetweenOrigAndDest(table).collect(Collectors.joining("\n"));
-
-    System.out.println(test);
   }
 
 }
