@@ -52,7 +52,7 @@ public class App {
     };
   }
 
-  private static void timed(Runnable f) {
+  public static void timed(Runnable f) {
     val startTime = System.currentTimeMillis();
     f.run();
     val endTime = System.currentTimeMillis();

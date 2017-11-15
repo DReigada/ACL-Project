@@ -89,7 +89,7 @@ public abstract class AbstractSolver {
       PositionVar lastPosition = lastPositions[robotId];
 
       if (lastPosition != null && lastPosition.j != currentPosition.j) { //robot moved
-        val dir = directionFromCoords(lastPosition.j, currentPosition.j, table);
+        val dir = table.directionFromCoords(lastPosition.j, currentPosition.j);
         moves.add(new Move(robotId, currentPosition.time, dir));
       }
 
@@ -97,24 +97,6 @@ public abstract class AbstractSolver {
     }
 
     return moves;
-  }
-
-
-  private static Table.Direction directionFromCoords(int from, int to, Table table) {
-    val fromCoords = table.getCoordsFromId(from);
-    val toCoords = table.getCoordsFromId(to);
-
-    if (toCoords[0] - fromCoords[0] > 0) {
-      return Table.Direction.Down;
-    } else if (toCoords[0] - fromCoords[0] < 0) {
-      return Table.Direction.Up;
-    } else if (toCoords[1] - fromCoords[1] > 0) {
-      return Table.Direction.Right;
-    } else if (toCoords[1] - fromCoords[1] < 0) {
-      return Table.Direction.Left;
-    } else {
-      throw new RuntimeException("This should never happen");
-    }
   }
 
 }

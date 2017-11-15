@@ -68,6 +68,22 @@ public class Table {
     return new int[]{((id - 1) / size), (id - 1) % size};
   }
 
+  public Table.Direction directionFromCoords(int from, int to) {
+    val fromCoords = getCoordsFromId(from);
+    val toCoords = getCoordsFromId(to);
+
+    if (toCoords[0] - fromCoords[0] > 0) {
+      return Table.Direction.Down;
+    } else if (toCoords[0] - fromCoords[0] < 0) {
+      return Table.Direction.Up;
+    } else if (toCoords[1] - fromCoords[1] > 0) {
+      return Table.Direction.Right;
+    } else if (toCoords[1] - fromCoords[1] < 0) {
+      return Table.Direction.Left;
+    } else {
+      throw new RuntimeException("This should never happen");
+    }
+  }
 
   @Override
   public String toString() {
