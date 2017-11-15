@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SmtApp {
-  private static final String SMT_INPUT_FILE = "input.smt";
 
   public static void main(String[] args) throws Exception {
+    new File("tmp").mkdir();
 
     val inputFile = new File("/Users/dreigada/IST/ALC/puzzles/small_puzzle/small_1.rr");
     val input = new InputParser(inputFile).parse();

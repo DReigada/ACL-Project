@@ -3,7 +3,6 @@ package smt;
 import com.google.common.io.ByteStreams;
 import fomatters.IParser;
 import lombok.val;
-import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.io.output.TeeOutputStream;
 import sat.solver.AbstractSolver;
 
@@ -13,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Runner {
-  private static final String SMT_INPUT_FILE = "input.smt";
+  private static final String SMT_INPUT_FILE = "tmp/input.smt";
 
   static Optional<Stream<AbstractSolver.Move>> run(IParser.ParsedInput input) throws IOException {
     // generate initial conditions
@@ -25,7 +24,7 @@ public class Runner {
     ProcessBuilder pb = new ProcessBuilder("/Users/dreigada/IST/ALC/labs/z3SMT/bin/z3", "-smt2", "-in");
     val process = pb.start();
 //    val stdin = new TeeOutputStream(new BufferedOutputStream(process.getOutputStream()), new BufferedOutputStream(System.out));
-    val stdin = new TeeOutputStream(new BufferedOutputStream(process.getOutputStream()), new BufferedOutputStream(new FileOutputStream("TEST.blaaa")));
+    val stdin = new TeeOutputStream(new BufferedOutputStream(process.getOutputStream()), new BufferedOutputStream(new FileOutputStream("tmp/TEST.blaaa")));
     val stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
     // copy input file to stdin
