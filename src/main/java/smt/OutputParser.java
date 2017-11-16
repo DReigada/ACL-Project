@@ -6,6 +6,7 @@ import sat.solver.AbstractSolver;
 import table.Table;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Optional;

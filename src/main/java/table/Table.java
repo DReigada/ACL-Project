@@ -81,7 +81,8 @@ public class Table {
     } else if (toCoords[1] - fromCoords[1] < 0) {
       return Table.Direction.Left;
     } else {
-      throw new RuntimeException("This should never happen");
+//      throw new RuntimeException("This should never happen")
+      return null;
     }
   }
 

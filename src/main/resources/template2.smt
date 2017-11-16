@@ -1,3 +1,7 @@
+;;;;;;;;;;;;;
+;; Movement $0
+;;;;;;;;;;;;;
+(push)
 (declare-const movement$0 RobotMovement)
 (assert (possibleMovement (mov movement$0) $0))
 (assert
@@ -25,8 +29,6 @@
   )
 )
 
-(push)
-; Objective Position
-;;;{objectivePosition}
-(check-sat)
-;;pop here
+
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;

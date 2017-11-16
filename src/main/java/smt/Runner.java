@@ -9,6 +9,7 @@ import sat.solver.AbstractSolver;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Runner {
@@ -35,26 +36,102 @@ public class Runner {
 
     val parser = new OutputParser(gen.table, stdout);
 
-    for (int currentMove = 0; currentMove < 10; currentMove++) {
-      stdin.write(gen.generateStepConditions(gen.getStepTemplateFile(), currentMove).getBytes());
+    return bla(stdin, gen, parser);
+
+//    for (int currentMove = 0; currentMove < 10; currentMove++) {
+//      stdin.write(gen.generateStepConditions(gen.getStepTemplateFile(), currentMove).getBytes());
+//      stdin.flush();
+//
+//      if (parser.isSat()) {
+//        for (int mov = 0; mov <= currentMove; mov++) {
+//          val eval = "(eval movement" + mov + ")\n";
+//          stdin.write(eval.getBytes());
+//        }
+//
+//        stdin.flush();
+//
+//        return Optional.of(parser.parseMoves(currentMove + 1));
+//      } else {
+//        stdin.write("(pop)\n".getBytes());
+//        stdin.flush();
+//      }
+//    }
+//
+//    return Optional.empty();
+  }
+
+
+  private static Optional<Stream<AbstractSolver.Move>> bla(OutputStream stdin, SmtFileGenerator gen, OutputParser parser) throws IOException {
+    int[] arr = new int[]{0, 1, 2, 4, 8, 16, 20};
+    int upperLimit = arr[arr.length - 1];
+    int bottomLimit = arr[0];
+
+    for (int step : arr) {
+      for (int currentMove = bottomLimit; currentMove <= step; currentMove++) {
+        stdin.write(gen.generateStepConditions(gen.getStepTemplateFile(), currentMove).getBytes());
+      }
       stdin.flush();
 
-      if (parser.isSat()) {
-        for (int mov = 0; mov <= currentMove; mov++) {
-          val eval = "(eval movement" + mov + ")\n";
-          stdin.write(eval.getBytes());
+
+      val solOpt = verifyObjective(step + 1, parser, stdin, gen);
+      if (solOpt.isPresent()) {
+        upperLimit = step;
+        val moves = solOpt.get();
+        if (upperLimit == bottomLimit) {
+          return Optional.of(moves);
+        } else {
+          return Optional.of(traceBack(upperLimit - 1, moves, parser, stdin, gen));
         }
-
-        stdin.flush();
-
-        return Optional.of(parser.parseMoves(currentMove + 1));
       } else {
-        stdin.write("(pop)\n".getBytes());
-        stdin.flush();
+        bottomLimit = step + 1;
       }
     }
 
     return Optional.empty();
+  }
+
+  private static void doPop(OutputStream stdin) throws IOException {
+    stdin.write("(pop)\n".getBytes());
+    stdin.flush();
+  }
+
+  private static Stream<AbstractSolver.Move> traceBack(int step, Stream<AbstractSolver.Move> old, OutputParser parser, OutputStream stdin, SmtFileGenerator gen) throws IOException {
+    doPop(stdin);
+    val solOpt = verifyObjective(step + 1, parser, stdin, gen);
+    if (solOpt.isPresent()) {
+      return traceBack(step - 1, solOpt.get(), parser, stdin, gen);
+    } else {
+      return old;
+    }
+  }
+
+
+  private static Optional<Stream<AbstractSolver.Move>> verifyObjective(int steps, OutputParser parser, OutputStream stdin, SmtFileGenerator gen) throws IOException {
+    try (BufferedReader reader = new BufferedReader(new FileReader(gen.getTemplateYADAYADA()))) {
+      String lines = reader.lines().map(a -> gen.replaceIfMatchesObjective(a, steps)).collect(Collectors.joining("\n", "\n", "\n"));
+      stdin.write(lines.getBytes());
+      stdin.flush();
+    }
+
+    if (parser.isSat()) {
+      val moves = getMoves(steps, parser, stdin);
+      doPop(stdin);
+      return Optional.of(moves);
+    } else {
+      doPop(stdin);
+      return Optional.empty();
+    }
+  }
+
+  private static Stream<AbstractSolver.Move> getMoves(int steps, OutputParser parser, OutputStream stdin) throws IOException {
+    for (int mov = 0; mov < steps; mov++) {
+      val eval = "(eval movement" + mov + ")\n";
+      stdin.write(eval.getBytes());
+    }
+
+    stdin.flush();
+
+    return parser.parseMoves(steps);
   }
 
 

@@ -20,10 +20,9 @@ public class PositionConditionsGenerator {
         .map(pos -> positionAssert(pos, "0", table));
   }
 
-  public static Stream<String> generateObjectivePosition(IParser.ParsedInput input, Table table, String time) {
-    String objectivePosCondition = positionAssert(input.getObjective(), time, table);
+  public static String generateObjectivePosition(IParser.ParsedInput input, Table table, String time) {
 
-    return Stream.of(objectivePosCondition);
+    return positionAssert(input.getObjective(), time, table);
   }
 
 

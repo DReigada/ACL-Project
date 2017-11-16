@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
@@ -44,18 +45,16 @@ public class SmtFileGenerator {
     try (BufferedReader reader = new BufferedReader(new FileReader(templateFilePath))) {
       Stream<String> newLines =
           reader.lines()
-              .flatMap(a -> replaceStepConditionLine(a, time, time + 1));
+              .map(a -> replaceStepConditionLine(a, time, time + 1));
 
       return newLines.collect(Collectors.joining("\n", "\n", "\n"));
     }
   }
 
-  private Stream<String> replaceStepConditionLine(String str, int t0, int t1) {
-    val replaced$ = str
+  private String replaceStepConditionLine(String str, int t0, int t1) {
+    return str
         .replace("$0", Integer.toString(t0))
         .replace("$1", Integer.toString(t1));
-
-    return replaceIfMatchesStep(replaced$, t1);
   }
 
 
@@ -63,9 +62,15 @@ public class SmtFileGenerator {
     return lines.flatMap(this::replaceIfMatches);
   }
 
-  private Stream<String> replaceIfMatchesStep(String line, int step) {
+  public String replaceIfMatchesObjective(String line, int step) {
     if (line.contains(objectivePositionExpr)) return generateObjectivePosition(input, table, Integer.toString(step));
-    else return Stream.of(line);
+    else return line;
+  }
+
+  public File getTemplateYADAYADA() {
+    ClassLoader classLoader = getClass().getClassLoader();
+    URL resource = classLoader.getResource("stepCheckSat.smt");
+    return new File(resource.getFile());
   }
 
 
