@@ -66,6 +66,10 @@ public class Runner {
     int upperLimit = arr[arr.length - 1];
     int bottomLimit = arr[0];
 
+    if (verifyObjective(0, parser, stdin, gen).isPresent()) {
+      return Optional.of(Stream.empty());
+    }
+
     for (int step : arr) {
       for (int currentMove = bottomLimit; currentMove <= step; currentMove++) {
         stdin.write(gen.generateStepConditions(gen.getStepTemplateFile(), currentMove).getBytes());
