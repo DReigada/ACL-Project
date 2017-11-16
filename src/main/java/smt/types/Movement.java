@@ -12,6 +12,6 @@ public class Movement {
   }
 
   public String compareToMovStr() {
-    return "(= mov " + toString() + ")";
+    return "(and (= orig " + orig + ") (= dest " + dest + "))";
   }
 }

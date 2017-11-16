@@ -6,10 +6,8 @@ import sat.solver.AbstractSolver;
 import table.Table;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -58,19 +56,18 @@ public class OutputParser {
     val list = new LinkedList<AbstractSolver.Move>();
 
     for (int i = 0; i < linesToRead; i++) {
-      list.add(parseMove(reader.readLine()));
+      list.add(parseMove());
     }
 
     return list.stream();
   }
 
-  private AbstractSolver.Move parseMove(String line) {
-    val matcher = movementRegex.matcher(line);
-    matcher.find();
-    val robot = IParser.Robot.fromId(Integer.parseInt(matcher.group(1)));
-    val orig = Integer.parseInt(matcher.group(2));
-    val dest = Integer.parseInt(matcher.group(3));
+  private AbstractSolver.Move parseMove() throws IOException {
+    val orig = Integer.parseInt(reader.readLine());
+    val dest = Integer.parseInt(reader.readLine());
+    val robot = IParser.Robot.fromId(Integer.parseInt(reader.readLine()));
 
     return new AbstractSolver.Move(robot.toId(), -1, table.directionFromCoords(orig, dest));
   }
+
 }

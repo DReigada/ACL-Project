@@ -125,8 +125,13 @@ public class Runner {
 
   private static Stream<AbstractSolver.Move> getMoves(int steps, OutputParser parser, OutputStream stdin) throws IOException {
     for (int mov = 0; mov < steps; mov++) {
-      val eval = "(eval movement" + mov + ")\n";
-      stdin.write(eval.getBytes());
+      val evalOrig = "(eval movementOrig" + mov + ")\n";
+      val evalDest = "(eval movementDest" + mov + ")\n";
+      val evalRobot = "(eval movementRobot" + mov + ")\n";
+
+      stdin.write(evalOrig.getBytes());
+      stdin.write(evalDest.getBytes());
+      stdin.write(evalRobot.getBytes());
     }
 
     stdin.flush();

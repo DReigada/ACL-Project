@@ -1,10 +1,5 @@
 (set-option :smt.mbqi true)
 
-(declare-datatypes () ((Movement (Movement (orig Int) (dest Int)))))
-
-(declare-datatypes () ((RobotMovement (RobotMovement (robot Int) (mov Movement)))))
-
-
 ;(declare-const usedTime Int)
 ;(assert (>= usedTime 0))
 ;(assert (<= usedTime 20)) ; TODO maybe add this as a variable
@@ -39,13 +34,14 @@
 ;;;;;;;
 
 (define-fun possibleMovement (
-    (mov Movement)
+    (orig Int)
+    (dest Int)
     (positionRed Int)
     (positionYellow Int)
     (positionGreen Int)
     (positionBlue Int)) Bool
   (or
-    (= (orig mov) (dest mov))
+    (= orig dest)
     ;;;{possibleMovements}
   )
 )
@@ -63,11 +59,13 @@
     (robot Int)
     (position Int)
     (positionPlusOne Int)
-    (movement RobotMovement)) Bool
-  (ite (= (robot movement) robot)
+    (orig Int)
+    (dest Int)
+    (moveRobot Int)) Bool
+  (ite (= moveRobot robot)
     (and
-      (= (orig (mov movement)) position)
-      (= (dest (mov movement)) positionPlusOne)
+      (= orig position)
+      (= dest positionPlusOne)
     )
     (= position positionPlusOne)
   )
