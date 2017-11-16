@@ -1,15 +1,3 @@
-(set-option :smt.mbqi true)
-
-;(declare-const usedTime Int)
-;(assert (>= usedTime 0))
-;(assert (<= usedTime 20)) ; TODO maybe add this as a variable
-
-; Time limits
-;(define-fun isValidTime ((time Int)) Bool (and (>= time 0) (<= time usedTime)))
-;(assert (isValidTime usedTime))
-
-;(declare-fun position (Robot Int) Int)
-
 (define-fun isPositionFilled (
     (pos Int)
     (positionRed Int)
@@ -22,12 +10,7 @@
     (= positionGreen pos)
     (= positionBlue pos)
   )
-
-  ;(exists ((robot Int)) (= (position robot time) pos))
-  ;(not (forall ((robot Int)) (not (= (position robot time) pos))))
 )
-
-
 
 ;;;;;;;
 ;; Problem specific conditions
@@ -88,5 +71,3 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Steps
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;
