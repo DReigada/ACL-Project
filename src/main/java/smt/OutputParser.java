@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class OutputParser {
   private final static Pattern movementRegex =
-      Pattern.compile("\\(RobotMovement (.*) \\(Movement \\(Position (\\d*)\\) \\(Position (\\d*)\\)\\)\\)");
+      Pattern.compile("\\(RobotMovement (.*) \\(Movement (\\d*) (\\d*)\\)\\)");
 
   private Table table;
   private BufferedReader reader;
@@ -67,7 +67,7 @@ public class OutputParser {
   private AbstractSolver.Move parseMove(String line) {
     val matcher = movementRegex.matcher(line);
     matcher.find();
-    val robot = IParser.Robot.valueOf(matcher.group(1));
+    val robot = IParser.Robot.fromId(Integer.parseInt(matcher.group(1)));
     val orig = Integer.parseInt(matcher.group(2));
     val dest = Integer.parseInt(matcher.group(3));
 

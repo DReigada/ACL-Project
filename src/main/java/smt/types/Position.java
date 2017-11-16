@@ -8,7 +8,7 @@ public class Position {
 
   @Override
   public String toString() {
-    return "(Position " + j + ')';
+    return j + "";
   }
 
   public String isPositionFilledStr() {

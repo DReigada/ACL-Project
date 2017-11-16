@@ -1,12 +1,8 @@
 (set-option :smt.mbqi true)
 
-(declare-datatypes () ((Robot Red Blue Green Yellow)))
+(declare-datatypes () ((Movement (Movement (orig Int) (dest Int)))))
 
-(declare-datatypes () ((Position (Position (j Int)))))
-
-(declare-datatypes () ((Movement (Movement (orig Position) (dest Position)))))
-
-(declare-datatypes () ((RobotMovement (RobotMovement (robot Robot) (mov Movement)))))
+(declare-datatypes () ((RobotMovement (RobotMovement (robot Int) (mov Movement)))))
 
 
 ;(declare-const usedTime Int)
@@ -17,14 +13,14 @@
 ;(define-fun isValidTime ((time Int)) Bool (and (>= time 0) (<= time usedTime)))
 ;(assert (isValidTime usedTime))
 
-;(declare-fun position (Robot Int) Position)
+;(declare-fun position (Robot Int) Int)
 
 (define-fun isPositionFilled (
-    (pos Position)
-    (positionRed Position)
-    (positionYellow Position)
-    (positionGreen Position)
-    (positionBlue Position)) Bool
+    (pos Int)
+    (positionRed Int)
+    (positionYellow Int)
+    (positionGreen Int)
+    (positionBlue Int)) Bool
   (or
     (= positionRed pos)
     (= positionYellow pos)
@@ -32,8 +28,8 @@
     (= positionBlue pos)
   )
 
-  ;(exists ((robot Robot)) (= (position robot time) pos))
-  ;(not (forall ((robot Robot)) (not (= (position robot time) pos))))
+  ;(exists ((robot Int)) (= (position robot time) pos))
+  ;(not (forall ((robot Int)) (not (= (position robot time) pos))))
 )
 
 
@@ -44,10 +40,10 @@
 
 (define-fun possibleMovement (
     (mov Movement)
-    (positionRed Position)
-    (positionYellow Position)
-    (positionGreen Position)
-    (positionBlue Position)) Bool
+    (positionRed Int)
+    (positionYellow Int)
+    (positionGreen Int)
+    (positionBlue Int)) Bool
   (or
     (= (orig mov) (dest mov))
     ;;;{possibleMovements}
@@ -58,15 +54,15 @@
 (define-const MAX_POS Int
   ;;;{maxPosition}
 )
-(define-fun isValidPosition ((pos Position)) Bool (and (>= (j pos) 1) (<= (j pos) MAX_POS)))
+(define-fun isValidPosition ((pos Int)) Bool (and (>= pos 1) (<= pos MAX_POS)))
 
 ;;;;;;;
 ;;;;;;;
 
 (define-fun arePositionsAndMoveValid (
-    (robot Robot)
-    (position Position)
-    (positionPlusOne Position)
+    (robot Int)
+    (position Int)
+    (positionPlusOne Int)
     (movement RobotMovement)) Bool
   (ite (= (robot movement) robot)
     (and
@@ -77,10 +73,10 @@
   )
 )
 
-(declare-const positionRed0 Position)
-(declare-const positionBlue0 Position)
-(declare-const positionGreen0 Position)
-(declare-const positionYellow0 Position)
+(declare-const positionRed0 Int)
+(declare-const positionBlue0 Int)
+(declare-const positionGreen0 Int)
+(declare-const positionYellow0 Int)
 
 
 ;;;;;;;
