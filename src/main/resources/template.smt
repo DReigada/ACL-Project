@@ -17,14 +17,19 @@
 ;(define-fun isValidTime ((time Int)) Bool (and (>= time 0) (<= time usedTime)))
 ;(assert (isValidTime usedTime))
 
-(declare-fun position (Robot Int) Position)
+;(declare-fun position (Robot Int) Position)
 
-(define-fun isPositionFilled ((pos Position) (time Int)) Bool
+(define-fun isPositionFilled (
+    (pos Position)
+    (positionRed Position)
+    (positionYellow Position)
+    (positionGreen Position)
+    (positionBlue Position)) Bool
   (or
-    (= (position Red time) pos)
-    (= (position Yellow time) pos)
-    (= (position Green time) pos)
-    (= (position Blue time) pos)
+    (= positionRed pos)
+    (= positionYellow pos)
+    (= positionGreen pos)
+    (= positionBlue pos)
   )
 
   ;(exists ((robot Robot)) (= (position robot time) pos))
@@ -37,7 +42,12 @@
 ;; Problem specific conditions
 ;;;;;;;
 
-(define-fun possibleMovement ((mov Movement) (time Int)) Bool
+(define-fun possibleMovement (
+    (mov Movement)
+    (positionRed Position)
+    (positionYellow Position)
+    (positionGreen Position)
+    (positionBlue Position)) Bool
   (or
     (= (orig mov) (dest mov))
     ;;;{possibleMovements}
@@ -53,15 +63,25 @@
 ;;;;;;;
 ;;;;;;;
 
-(define-fun bla ((robot Robot) (t0 Int) (t1 Int) (movement RobotMovement)) Bool
+(define-fun arePositionsAndMoveValid (
+    (robot Robot)
+    (position Position)
+    (positionPlusOne Position)
+    (movement RobotMovement)) Bool
   (ite (= (robot movement) robot)
     (and
-      (= (orig (mov movement)) (position robot t0))
-      (= (dest (mov movement)) (position robot t1))
+      (= (orig (mov movement)) position)
+      (= (dest (mov movement)) positionPlusOne)
     )
-    (= (position robot t0) (position robot t1))
+    (= position positionPlusOne)
   )
 )
+
+(declare-const positionRed0 Position)
+(declare-const positionBlue0 Position)
+(declare-const positionGreen0 Position)
+(declare-const positionYellow0 Position)
+
 
 ;;;;;;;
 ;; Problem specific

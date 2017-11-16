@@ -16,7 +16,7 @@ public class SmtApp {
   public static void main(String[] args) throws Exception {
     new File("tmp").mkdir();
 
-    val inputFile = new File("/Users/dreigada/IST/ALC/puzzles/small_puzzle/small_2.rr");
+    val inputFile = new File("/Users/dreigada/IST/ALC/puzzles/small_puzzle/small_1.rr");
     val input = new InputParser(inputFile).parse();
 
     val startTime = System.currentTimeMillis();

@@ -27,7 +27,7 @@ public class PositionConditionsGenerator {
 
 
   private static String positionAssert(IParser.Position pos, String time, Table table) {
-    return "(assert(= (position " + pos.getRobot() + " " + time + ") " + parserPositionToSmt(pos, table) + "))";
+    return "(assert(= position" + pos.getRobot() + time + " " + parserPositionToSmt(pos, table) + "))";
   }
 
   private static Position parserPositionToSmt(IParser.Position pos, Table table) {

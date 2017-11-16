@@ -3,29 +3,34 @@
 ;;;;;;;;;;;;;
 (push)
 (declare-const movement$0 RobotMovement)
-(assert (possibleMovement (mov movement$0) $0))
+(declare-const positionRed$1 Position)
+(declare-const positionBlue$1 Position)
+(declare-const positionGreen$1 Position)
+(declare-const positionYellow$1 Position)
+
+(assert (possibleMovement (mov movement$0) positionRed$0 positionYellow$0 positionGreen$0 positionBlue$0))
 (assert
   (and
-    (bla Red $0 $1 movement$0)
-    (bla Yellow $0 $1 movement$0)
-    (bla Green $0 $1 movement$0)
-    (bla Blue $0 $1 movement$0)
+    (arePositionsAndMoveValid Red positionRed$0 positionRed$1 movement$0)
+    (arePositionsAndMoveValid Yellow positionYellow$0 positionYellow$1 movement$0)
+    (arePositionsAndMoveValid Green positionGreen$0 positionGreen$1 movement$0)
+    (arePositionsAndMoveValid Blue positionBlue$0 positionBlue$1 movement$0)
   )
 )
 (assert
   (and
-    (isValidPosition (position Red $1))
-    (isValidPosition (position Yellow $1))
-    (isValidPosition (position Green $1))
-    (isValidPosition (position Blue $1))
+    (isValidPosition positionRed$1)
+    (isValidPosition positionYellow$1)
+    (isValidPosition positionGreen$1)
+    (isValidPosition positionBlue$1)
   )
 )
 (assert
   (distinct
-    (position Red $1)
-    (position Blue $1)
-    (position Green $1)
-    (position Yellow $1)
+    positionRed$1
+    positionBlue$1
+    positionGreen$1
+    positionYellow$1
   )
 )
 

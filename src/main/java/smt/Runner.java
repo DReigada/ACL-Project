@@ -62,7 +62,7 @@ public class Runner {
 
 
   private static Optional<Stream<AbstractSolver.Move>> bla(OutputStream stdin, SmtFileGenerator gen, OutputParser parser) throws IOException {
-    int[] arr = new int[]{0, 1, 2, 4, 8, 16, 20};
+    int[] arr = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 20};
     int upperLimit = arr[arr.length - 1];
     int bottomLimit = arr[0];
 

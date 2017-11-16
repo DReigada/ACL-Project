@@ -12,6 +12,6 @@ public class Position {
   }
 
   public String isPositionFilledStr() {
-    return "(isPositionFilled " + toString() + " time)";
+    return "(isPositionFilled " + toString() + " positionRed positionYellow positionGreen positionBlue)";
   }
 }
