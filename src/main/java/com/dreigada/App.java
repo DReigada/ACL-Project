@@ -1,9 +1,9 @@
 package com.dreigada;
 
-import solver.AbstractSolver;
-import solver.ExternalSolverRunner;
-import solver.Sat4JSolver;
-import solver.externalSolvers.LingelingSolver;
+import sat.solver.AbstractSolver;
+import sat.solver.ExternalSolverRunner;
+import sat.solver.Sat4JSolver;
+import sat.solver.externalSolvers.LingelingSolver;
 import fomatters.IParser;
 import fomatters.InputParser;
 import fomatters.OutputFormatter;
@@ -52,7 +52,7 @@ public class App {
     };
   }
 
-  private static void timed(Runnable f) {
+  public static void timed(Runnable f) {
     val startTime = System.currentTimeMillis();
     f.run();
     val endTime = System.currentTimeMillis();

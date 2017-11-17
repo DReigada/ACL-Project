@@ -1,23 +1,23 @@
-package variables;
+package sat.variables;
 
 import lombok.EqualsAndHashCode;
 import lombok.val;
 
 @EqualsAndHashCode(callSuper = true)
-public class PositionVar extends Variable {
+public class PossibleMoveVar extends Variable {
 
-  public final int j, k;
-  public final int time;
+  private int j, l;
+  private int time;
 
-  public PositionVar(int j, int k, int t) {
+  public PossibleMoveVar(int j, int l, int t) {
     this.time = t;
     this.j = j;
-    this.k = k;
+    this.l = l;
   }
 
   @Override
   public Variable copy() {
-    val mov = new PositionVar(j, k, time);
+    val mov = new PossibleMoveVar(j, l, time);
     if (isNegated()) {
       return mov.negated();
     } else {
@@ -28,7 +28,7 @@ public class PositionVar extends Variable {
   @Override
   public String toString() {
     String neg = isNegated() ? "-" : "";
-    return neg + "PositionVar(" + "j=" + j + ", k=" + k + ", t=" + time + ')';
+    return neg + "PossibleMoveVar(" + "j=" + j + ", l=" + l + ", t=" + time + ')';
   }
 
 }

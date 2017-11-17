@@ -1,6 +1,6 @@
 package fomatters;
 
-import solver.AbstractSolver;
+import sat.solver.AbstractSolver;
 import lombok.val;
 
 import java.util.List;

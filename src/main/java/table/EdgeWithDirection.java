@@ -4,6 +4,8 @@ import lombok.Value;
 import lombok.val;
 
 import java.util.Iterator;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -14,7 +16,11 @@ public class EdgeWithDirection {
   boolean isLast;
 
   public int getNextId() {
-    return dest.getNext(direction).getId();
+    return getNextCellOpt().map(ConnectedCell::getId).get();
+  }
+
+  public Optional<ConnectedCell> getNextCellOpt() {
+    return dest.getNextOpt(direction);
   }
 
   public Stream<ConnectedCell> getStream() {

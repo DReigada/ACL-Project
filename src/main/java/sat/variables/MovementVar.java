@@ -1,4 +1,4 @@
-package variables;
+package sat.variables;
 
 import lombok.EqualsAndHashCode;
 import lombok.val;

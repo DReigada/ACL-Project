@@ -1,4 +1,4 @@
-package solver.externalSolvers;
+package sat.solver.externalSolvers;
 
 import java.io.File;
 import java.io.IOException;

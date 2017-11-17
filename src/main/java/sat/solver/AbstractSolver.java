@@ -1,13 +1,13 @@
-package solver;
+package sat.solver;
 
 import fomatters.IParser;
 import lombok.ToString;
 import lombok.Value;
 import lombok.val;
 import table.Table;
-import variables.ClauseFormula;
-import variables.PositionVar;
-import variables.VarMap;
+import sat.variables.ClauseFormula;
+import sat.variables.PositionVar;
+import sat.variables.VarMap;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static conditions.Conditions.*;
+import static sat.conditions.Conditions.*;
 
 public abstract class AbstractSolver {
   protected final IParser.ParsedInput input;
@@ -89,7 +89,7 @@ public abstract class AbstractSolver {
       PositionVar lastPosition = lastPositions[robotId];
 
       if (lastPosition != null && lastPosition.j != currentPosition.j) { //robot moved
-        val dir = directionFromCoords(lastPosition.j, currentPosition.j, table);
+        val dir = table.directionFromCoords(lastPosition.j, currentPosition.j);
         moves.add(new Move(robotId, currentPosition.time, dir));
       }
 
@@ -97,24 +97,6 @@ public abstract class AbstractSolver {
     }
 
     return moves;
-  }
-
-
-  private static Table.Direction directionFromCoords(int from, int to, Table table) {
-    val fromCoords = table.getCoordsFromId(from);
-    val toCoords = table.getCoordsFromId(to);
-
-    if (toCoords[0] - fromCoords[0] > 0) {
-      return Table.Direction.Down;
-    } else if (toCoords[0] - fromCoords[0] < 0) {
-      return Table.Direction.Up;
-    } else if (toCoords[1] - fromCoords[1] > 0) {
-      return Table.Direction.Right;
-    } else if (toCoords[1] - fromCoords[1] < 0) {
-      return Table.Direction.Left;
-    } else {
-      throw new RuntimeException("This should never happen");
-    }
   }
 
 }

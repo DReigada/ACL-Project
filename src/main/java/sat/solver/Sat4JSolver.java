@@ -1,4 +1,4 @@
-package solver;
+package sat.solver;
 
 import fomatters.IParser;
 import lombok.val;
@@ -7,7 +7,7 @@ import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
-import variables.ClauseFormula;
+import sat.variables.ClauseFormula;
 
 import java.util.Optional;
 

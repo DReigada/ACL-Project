@@ -1,4 +1,4 @@
-package variables;
+package sat.variables;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
