@@ -34,7 +34,7 @@ public class SmtFileGenerator {
   }
 
   public void generateAndSave(Path path) throws IOException {
-    try (BufferedReader reader = new BufferedReader(new FileReader(getTemplateFile()))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(getMainTemplateFile()))) {
       val newLines = replaceLines(reader.lines());
       Files.write(path, (Iterable<String>) newLines::iterator);
     }
@@ -67,10 +67,21 @@ public class SmtFileGenerator {
     else return line;
   }
 
-  public File getTemplateYADAYADA() {
+  private File getMainTemplateFile() {
     ClassLoader classLoader = getClass().getClassLoader();
-    URL resource = classLoader.getResource("ChecSatTemplate.smt");
+    return new File(classLoader.getResource("MainTemplate.smt").getFile());
+  }
+
+  public File getCheckStepTemplate() {
+    ClassLoader classLoader = getClass().getClassLoader();
+    URL resource = classLoader.getResource("CheckSatTemplate.smt");
     return new File(resource.getFile());
+  }
+
+
+  public File getStepTemplateFile() {
+    ClassLoader classLoader = getClass().getClassLoader();
+    return new File(classLoader.getResource("StepsTemplate.smt").getFile());
   }
 
 
@@ -80,16 +91,6 @@ public class SmtFileGenerator {
     else if (line.contains(initialPositionsExpr)) return generateInitialPositions(input, table);
 //    else if (line.contains(objectivePositionExpr)) return generateObjectivePosition(input, table, USEd);
     else return Stream.of(line);
-  }
-
-  private File getTemplateFile() {
-    ClassLoader classLoader = getClass().getClassLoader();
-    return new File(classLoader.getResource("MainTemplate.smt").getFile());
-  }
-
-  public File getStepTemplateFile() {
-    ClassLoader classLoader = getClass().getClassLoader();
-    return new File(classLoader.getResource("StepsTemplate.smt").getFile());
   }
 
 
