@@ -71,7 +71,7 @@ public class Runner {
 
 
   protected Optional<Stream<AbstractSolver.Move>> verifyObjective(int steps, OutputParser parser, OutputStream stdin, SmtFileGenerator gen) throws IOException {
-    try (BufferedReader reader = new BufferedReader(new FileReader(gen.getCheckStepTemplate()))) {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(gen.getCheckStepTemplate()))) {
       String lines = reader.lines().map(a -> gen.replaceIfMatchesObjective(a, steps)).collect(Collectors.joining("\n", "\n", "\n"));
       stdin.write(lines.getBytes());
       stdin.flush();

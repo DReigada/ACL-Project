@@ -4,11 +4,7 @@ import fomatters.IParser;
 import lombok.val;
 import table.Table;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
@@ -34,15 +30,15 @@ public class SmtFileGenerator {
   }
 
   public void generateAndSave(Path path) throws IOException {
-    try (BufferedReader reader = new BufferedReader(new FileReader(getMainTemplateFile()))) {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(getMainTemplateFile()))) {
       val newLines = replaceLines(reader.lines());
       Files.write(path, (Iterable<String>) newLines::iterator);
     }
   }
 
 
-  public String generateStepConditions(File templateFilePath, int time) throws IOException {
-    try (BufferedReader reader = new BufferedReader(new FileReader(templateFilePath))) {
+  public String generateStepConditions(InputStream templateFile, int time) throws IOException {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(templateFile))) {
       Stream<String> newLines =
           reader.lines()
               .map(a -> replaceStepConditionLine(a, time, time + 1));
@@ -67,21 +63,17 @@ public class SmtFileGenerator {
     else return line;
   }
 
-  private File getMainTemplateFile() {
-    ClassLoader classLoader = getClass().getClassLoader();
-    return new File(classLoader.getResource("MainTemplate.smt").getFile());
+  private InputStream getMainTemplateFile() {
+    return getClass().getResourceAsStream("/MainTemplate.smt");
   }
 
-  public File getCheckStepTemplate() {
-    ClassLoader classLoader = getClass().getClassLoader();
-    URL resource = classLoader.getResource("CheckSatTemplate.smt");
-    return new File(resource.getFile());
+  public InputStream getCheckStepTemplate() {
+    return getClass().getResourceAsStream("/CheckSatTemplate.smt");
   }
 
 
-  public File getStepTemplateFile() {
-    ClassLoader classLoader = getClass().getClassLoader();
-    return new File(classLoader.getResource("StepsTemplate.smt").getFile());
+  public InputStream getStepTemplateFile() {
+    return getClass().getResourceAsStream("/StepsTemplate.smt");
   }
 
 
