@@ -69,7 +69,7 @@ public class SmtFileGenerator {
 
   public File getTemplateYADAYADA() {
     ClassLoader classLoader = getClass().getClassLoader();
-    URL resource = classLoader.getResource("stepCheckSat.smt");
+    URL resource = classLoader.getResource("ChecSatTemplate.smt");
     return new File(resource.getFile());
   }
 
@@ -84,12 +84,12 @@ public class SmtFileGenerator {
 
   private File getTemplateFile() {
     ClassLoader classLoader = getClass().getClassLoader();
-    return new File(classLoader.getResource("template.smt").getFile());
+    return new File(classLoader.getResource("MainTemplate.smt").getFile());
   }
 
   public File getStepTemplateFile() {
     ClassLoader classLoader = getClass().getClassLoader();
-    return new File(classLoader.getResource("template2.smt").getFile());
+    return new File(classLoader.getResource("StepsTemplate.smt").getFile());
   }
 
 
