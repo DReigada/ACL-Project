@@ -1,8 +1,9 @@
-package smt;
+package com.dreigada;
 
 import fomatters.InputParser;
 import fomatters.OutputFormatter;
 import lombok.val;
+import smt.Runner;
 
 import java.io.File;
 import java.util.stream.Collectors;
