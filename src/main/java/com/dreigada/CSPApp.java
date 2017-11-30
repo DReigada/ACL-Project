@@ -1,5 +1,6 @@
-package csp;
+package com.dreigada;
 
+import csp.Runner;
 import fomatters.InputParser;
 import fomatters.OutputFormatter;
 import lombok.val;
@@ -9,9 +10,8 @@ import java.util.stream.Collectors;
 
 public class CSPApp {
 
-
   public static void main(String[] args) throws Exception {
-    val inputFile = new File("/Users/dreigada/IST/ALC/puzzles/puzzles-students/puzzle-49.rr");
+    val inputFile = new File(args[0]);
     val input = new InputParser(inputFile).parse();
 
     val startTime = System.currentTimeMillis();
