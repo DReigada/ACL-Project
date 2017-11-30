@@ -38,7 +38,7 @@ public class OutputParser {
     this.reader = reader;
   }
 
-  public Optional<Stream<AbstractSolver.Move>> parse(Table table) {
+  public Optional<Stream<AbstractSolver.Move>> parse() {
     val positions = reader
         .lines()
         .filter(line -> line.startsWith(POSITIONS_PREFIX))

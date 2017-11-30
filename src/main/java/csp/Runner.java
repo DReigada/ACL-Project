@@ -31,12 +31,21 @@ public class Runner {
     writeToTempModelFile();
     writeToInputFile(input, table);
 
-    writeToStepsFile(3); // TODO: fix this
+    for (int steps = 0; steps <= 20; steps++) {
+      val res = trySolve(steps, table);
+      if (res.isPresent()) {
+        return res;
+      }
+    }
 
+    return Optional.empty();
+  }
+
+  private Optional<Stream<AbstractSolver.Move>> trySolve(int steps, Table table) throws IOException {
+    writeToStepsFile(steps);
     val stdOut = exec();
     val reader = new BufferedReader(new InputStreamReader(stdOut));
-
-    return new OutputParser(table, reader).parse(table);
+    return new OutputParser(table, reader).parse();
   }
 
   private void writeToTempModelFile() throws IOException {

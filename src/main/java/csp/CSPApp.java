@@ -11,11 +11,16 @@ public class CSPApp {
 
 
   public static void main(String[] args) throws Exception {
-    val inputFile = new File("/Users/dreigada/IST/ALC/puzzles/puzzles-students/puzzle-2.rr");
+    val inputFile = new File("/Users/dreigada/IST/ALC/puzzles/puzzles-students/puzzle-49.rr");
     val input = new InputParser(inputFile).parse();
 
-    val res = new Runner("/Applications/MiniZincIDE.app/Contents/Resources/minizinc").run(input);
+    val startTime = System.currentTimeMillis();
 
+    val res = new Runner("minizinc").run(input);
+
+    val endTime = System.currentTimeMillis();
+
+//    System.err.println("Duration: " + (endTime - startTime));
 
     if (res.isPresent()) {
       val output = OutputFormatter.format(res.get().collect(Collectors.toList()));
