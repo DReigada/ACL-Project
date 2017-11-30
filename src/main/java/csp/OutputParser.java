@@ -7,10 +7,7 @@ import sat.solver.AbstractSolver;
 import table.Table;
 
 import java.io.BufferedReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -69,6 +66,8 @@ public class OutputParser {
         time += 1;
       }
     }
+
+    moves.sort(Comparator.comparingInt(a -> a.getTime()));
 
     return Optional.of(moves.stream());
   }
