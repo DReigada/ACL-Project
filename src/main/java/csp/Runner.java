@@ -1,5 +1,6 @@
 package csp;
 
+import com.google.common.io.ByteStreams;
 import fomatters.IParser;
 import lombok.val;
 import sat.solver.AbstractSolver;
@@ -12,6 +13,8 @@ import java.util.stream.Stream;
 
 public class Runner {
   private final String binaryFile;
+
+  private final static String TMP_MODEL_FILE = "model.mzn";
   private final static String INPUT_DZN_FILE = "input.dzn";
   private final static String STEPS_DZN_FILE = "steps.dzn";
 
@@ -22,11 +25,25 @@ public class Runner {
   public Optional<Stream<AbstractSolver.Move>> run(IParser.ParsedInput input) throws IOException {
     val table = new Table(input);
 
+    writeToTempModelFile();
     writeToInputFile(input, table);
 
-    writeToStepsFile(5);
+    writeToStepsFile(3); // TODO: fix this
 
-    return Optional.empty();
+    val stdOut = exec();
+    val reader = new BufferedReader(new InputStreamReader(stdOut));
+
+    return new OutputParser(table, reader).parse(table);
+  }
+
+  private void writeToTempModelFile() throws IOException {
+    val modelFileStream = getModelFile();
+    val outputStream = new BufferedOutputStream(new FileOutputStream(TMP_MODEL_FILE));
+
+    ByteStreams.copy(modelFileStream, outputStream);
+
+    outputStream.close();
+    modelFileStream.close();
   }
 
   private static void writeToStepsFile(int steps) throws IOException {
@@ -47,13 +64,18 @@ public class Runner {
   }
 
 
-  private InputStream exec(File file) throws IOException {
+  private InputStream exec() throws IOException {
     val rt = Runtime.getRuntime();
-    val proc = rt.exec(getCmd(file));
+    val proc = rt.exec(getCmd());
+//    new BufferedReader(new InputStreamReader(proc.getErrorStream())).lines().forEach(System.err::println);
     return proc.getInputStream();
   }
 
-  private String getCmd(File file) {
-    return binaryFile + " " + file.getAbsolutePath();
+  private String getCmd() {
+    return binaryFile + " " + TMP_MODEL_FILE + " " + INPUT_DZN_FILE + " " + STEPS_DZN_FILE;
+  }
+
+  private InputStream getModelFile() {
+    return getClass().getResourceAsStream("/csp/model.mzn");
   }
 }
