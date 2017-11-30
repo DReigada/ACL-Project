@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <version>1.0.0</version>
     <properties>
-        <mainClass>com.dreigada.SmtApp</mainClass>
+        <mainClass>com.dreigada.CSPApp</mainClass>
     </properties>
     <build>
         <plugins>
