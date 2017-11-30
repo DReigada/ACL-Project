@@ -14,15 +14,18 @@ import java.util.stream.Stream;
 public class Runner {
   private final String binaryFile;
 
-  private final static String TMP_MODEL_FILE = "model.mzn";
-  private final static String INPUT_DZN_FILE = "input.dzn";
-  private final static String STEPS_DZN_FILE = "steps.dzn";
+  private final static String TMP_DIR = "tmp/";
+  private final static String TMP_MODEL_FILE = TMP_DIR + "model.mzn";
+  private final static String INPUT_DZN_FILE = TMP_DIR + "input.dzn";
+  private final static String STEPS_DZN_FILE = TMP_DIR + "steps.dzn";
 
   public Runner(String binaryFile) {
     this.binaryFile = binaryFile;
   }
 
   public Optional<Stream<AbstractSolver.Move>> run(IParser.ParsedInput input) throws IOException {
+    createTmpDir();
+
     val table = new Table(input);
 
     writeToTempModelFile();
@@ -77,5 +80,9 @@ public class Runner {
 
   private InputStream getModelFile() {
     return getClass().getResourceAsStream("/csp/model.mzn");
+  }
+
+  private static void createTmpDir() {
+    new File(TMP_DIR).mkdir();
   }
 }
