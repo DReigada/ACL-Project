@@ -1,124 +1,59 @@
 package csp;
 
 import fomatters.IParser;
-import lombok.Value;
 import lombok.val;
 import sat.solver.AbstractSolver;
-import table.EdgeWithDirection;
 import table.Table;
 
-import java.io.IOException;
-import java.util.Map;
+import java.io.*;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static helpers.StreamHelpers.range;
-import static helpers.StreamHelpers.rangeClosed;
-
 public class Runner {
-  private final String executablePath;
+  private final String binaryFile;
+  private final static String INPUT_DZN_FILE = "input.dzn";
+  private final static String STEPS_DZN_FILE = "steps.dzn";
 
-  @Value
-  private static class OrigDest {
-    int orig, dest;
+  public Runner(String binaryFile) {
+    this.binaryFile = binaryFile;
   }
-
-  @Value
-  private static class ArrayContent {
-    boolean isValid, isLast;
-  }
-
-  public Runner(String executablePath) {
-    this.executablePath = executablePath;
-  }
-
 
   public Optional<Stream<AbstractSolver.Move>> run(IParser.ParsedInput input) throws IOException {
     val table = new Table(input);
 
-    val boardInfo = getBoardInfo(table);
-    val initialPos = getInitialPositionsStr(input);
-    val objectives = getObjectives(input);
-    val possibleMoves = getPossibleMoves(table);
+    writeToInputFile(input, table);
 
-    val res = Stream.concat(boardInfo, Stream.concat(initialPos, Stream.concat(objectives, possibleMoves)))
-        .map(a -> a + ";")
-        .collect(Collectors.joining("\n"));
-
-
-    System.out.println(res);
+    writeToStepsFile(5);
 
     return Optional.empty();
   }
 
-  private static Stream<String> getBoardInfo(Table table) {
-    return Stream.of("tableSize = " + table.getSize());
+  private static void writeToStepsFile(int steps) throws IOException {
+    val outputStream = new BufferedOutputStream(new FileOutputStream(STEPS_DZN_FILE));
+    val line = "maxSteps = " + steps + ";\n";
+
+    outputStream.write(line.getBytes());
+    outputStream.close();
   }
 
 
-  private static Stream<String> getInitialPositionsStr(IParser.ParsedInput input) {
-    return input.getStartingPositions().stream()
-        .flatMap(a -> {
-          val row = a.getRobot() + "PositionRow = " + (a.getI() + 1);
-          val col = a.getRobot() + "PositionCol = " + (a.getJ() + 1);
-          return Stream.of(row, col);
-        });
+  private static void writeToInputFile(IParser.ParsedInput input, Table table) throws IOException {
+    val lines = new DZNGenerator().getDZN(input, table);
+    val outputStream = new BufferedOutputStream(new FileOutputStream(INPUT_DZN_FILE));
+
+    outputStream.write(lines.collect(Collectors.joining()).getBytes());
+    outputStream.close();
   }
 
 
-  private static Stream<String> getObjectives(IParser.ParsedInput input) {
-    val obj = input.getObjective();
-    val objectivePositionRow = "objectivePositionRow = " + (obj.getI() + 1);
-    val objectivePositionCol = "objectivePositionCol = " + (obj.getJ() + 1);
-    val objectiveRobot = "objectiveRobot = " + (obj.getRobot().toId() + 1);
-
-    return Stream.of(objectivePositionRow, objectivePositionCol, objectiveRobot);
+  private InputStream exec(File file) throws IOException {
+    val rt = Runtime.getRuntime();
+    val proc = rt.exec(getCmd(file));
+    return proc.getInputStream();
   }
 
-  private static Stream<String> getPossibleMoves(Table table) {
-    return Stream.of("possibleMoves = array5d(1..tableSize, 1..tableSize, 0..1, 1..tableSize, 0..1, " +
-        getPossibleMovesArray(table) + ")");
-  }
-
-  private static String getPossibleMovesArray(Table table) {
-    Function<EdgeWithDirection, OrigDest> keyMapper = a -> new OrigDest(a.getOrig().getId(), a.getDest().getId());
-
-    Map<OrigDest, EdgeWithDirection> edges = table.getAllEdges()
-        .collect(Collectors.toMap(keyMapper, Function.identity()));
-
-
-    Stream<ArrayContent> t =
-        rangeClosed(1, table.getMaxPosition())
-            .flatMap(orig -> {
-              val line = getLine(orig, table).map(dest -> arrayContentFromEdge(orig, dest, edges));
-              val col = getCol(orig, table).map(dest -> arrayContentFromEdge(orig, dest, edges));
-              return Stream.concat(line, col);
-            });
-
-    return t.map(a -> a.isValid() + ", " + a.isLast())
-        .collect(Collectors.joining(", ", "[", "]"));
-  }
-
-  private static ArrayContent arrayContentFromEdge(int orig, int dest, Map<OrigDest, EdgeWithDirection> edges) {
-    val edge = edges.get(new OrigDest(orig, dest));
-    if (edge != null) {
-      return new ArrayContent(true, edge.isLast());
-    } else if (orig == dest) {
-      return new ArrayContent(true, true);
-    } else {
-      return new ArrayContent(false, false);
-    }
-  }
-
-  private static Stream<Integer> getLine(int i, Table table) {
-    int line = (i - 1) / table.getSize();
-    return rangeClosed(1, table.getSize()).map(ind -> table.getSize() * line + ind);
-  }
-
-  private static Stream<Integer> getCol(int i, Table table) {
-    int col = (i - 1) % table.getSize() + 1;
-    return range(0, table.getSize()).map(ind -> table.getSize() * ind + col);
+  private String getCmd(File file) {
+    return binaryFile + " " + file.getAbsolutePath();
   }
 }
