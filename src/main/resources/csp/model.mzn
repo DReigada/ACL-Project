@@ -30,8 +30,8 @@ array[validPositionsSet, validPositionsSet, 0..1, 1..tableSize, 0..1] of bool : 
 array[allTimeStepsSet, robotsSet, 0..1] of var validPositionsSet : positions; % 0 -> Col, 1 -> Row
 var 0..maxSteps: stepsUsed;
 
-var set of int: timeStepsSet = 0..maxSteps;
-var set of int: stepsSetExceptLast = 0..(maxSteps - 1);
+var set of int: timeStepsSet = 0..stepsUsed;
+var set of int: stepsSetExceptLast = 0..(stepsUsed - 1);
 
 
 predicate isPositionFilled(var int: step, var int: positionRow, var int: positionCol) =
@@ -93,7 +93,7 @@ constraint positions[stepsUsed, objectiveRobot, 1] = objectivePositionCol;
 
 %%%%%
 
-%% all positions must be different
+% all positions must be different
 constraint forall(timeStep in timeStepsSet, robot in robotsSet)(
   forall(robot2 in robotsSet where robot2 != robot) (
     not (
@@ -106,11 +106,13 @@ constraint forall(timeStep in timeStepsSet, robot in robotsSet)(
 % if a robot moved then its movement must be valid and no other robot should move
 constraint forall(timeStep in stepsSetExceptLast, robot in robotsSet) (
   ((positions[timeStep, robot, 0] = positions[timeStep + 1, robot, 0]) /\ (positions[timeStep, robot, 1] = positions[timeStep + 1, robot, 1]))
-  \/ (
-    isPossibleMovement(positions[timeStep, robot, 0], positions[timeStep, robot, 1], positions[timeStep + 1, robot, 0], positions[timeStep + 1, robot, 1], timeStep)
-    /\ forall(robot2 in robotsSet where robot2 != robot) (
+  \/
+    forall(robot2 in robotsSet where robot2 != robot) (
       positions[timeStep, robot2, 0] = positions[timeStep + 1, robot2, 0] /\ positions[timeStep, robot2, 1] = positions[timeStep + 1, robot2, 1])
-  )
+);
+
+constraint forall(timeStep in stepsSetExceptLast, robot in robotsSet) (
+  isPossibleMovement(positions[timeStep, robot, 0], positions[timeStep, robot, 1], positions[timeStep + 1, robot, 0], positions[timeStep + 1, robot, 1], timeStep)
 );
 
 
@@ -118,7 +120,7 @@ solve satisfy;
 % solve minimize stepsUsed;
 
 
-output [show(stepsUsed)];
+output [show(maxSteps)];
 output ["\n"];
 
 output ["positions r: "];
