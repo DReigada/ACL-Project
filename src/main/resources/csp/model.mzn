@@ -42,7 +42,7 @@ predicate isPossible(var int: origRow, var int: origCol, var 0..1: rowOrCol, var
 predicate isFinal(var int: origRow, var int: origCol, var 0..1: rowOrCol, var int: destCol) = possibleMoves[origRow, origCol, rowOrCol, destCol, 1];
 
 
-predicate DO_ROW_STUFF(var int: origRow, var int: origCol, var int: destRow, var int: destCol, var int: step) =
+predicate isPossibleMovementRow(var int: origRow, var int: origCol, var int: destRow, var int: destCol, var int: step) =
   isPossible(origRow, origCol, 0, destCol)
   /\ (
     if origCol < destCol then
@@ -54,7 +54,7 @@ predicate DO_ROW_STUFF(var int: origRow, var int: origCol, var int: destRow, var
     endif
   );
 
-predicate DO_COL_STUFF(var int: origRow, var int: origCol, var int: destRow, var int: destCol, var int: step) =
+predicate isPossibleMovementCol(var int: origRow, var int: origCol, var int: destRow, var int: destCol, var int: step) =
   isPossible(origRow, origCol, 1, destRow)
   /\ (
     if origRow < destRow then
@@ -68,8 +68,8 @@ predicate DO_COL_STUFF(var int: origRow, var int: origCol, var int: destRow, var
 
 
 predicate isPossibleMovement(var int: origRow, var int: origCol, var int: destRow, var int: destCol, var int: step) =
-  ((origRow = destRow) /\ DO_ROW_STUFF(origRow, origCol, destRow, destCol, step))
-  \/ ((origCol = destCol) /\ DO_COL_STUFF(origRow, origCol, destRow, destCol, step));
+  ((origRow = destRow) /\ isPossibleMovementRow(origRow, origCol, destRow, destCol, step))
+  \/ ((origCol = destCol) /\ isPossibleMovementCol(origRow, origCol, destRow, destCol, step));
 
 
 %%%%% constraints
