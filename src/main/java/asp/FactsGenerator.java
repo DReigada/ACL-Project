@@ -3,16 +3,22 @@ package asp;
 import fomatters.InputParser;
 import lombok.val;
 
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class FactsGenerator {
 
   public static Stream<String> generate(InputParser.ParsedInput input) {
+    val dimension = generateDimension(input);
     val pos = generatePositions(input);
     val target = generateTarget(input);
     val barriers = generateBarriers(input);
 
-    return Stream.concat(pos, Stream.concat(Stream.of(target), barriers));
+    return Stream.of(dimension, pos, target, barriers).flatMap(Function.identity());
+  }
+
+  private static Stream<String> generateDimension(InputParser.ParsedInput input) {
+    return Stream.of("#const dimension=" + input.getSize() + ".");
   }
 
   private static Stream<String> generatePositions(InputParser.ParsedInput input) {
@@ -21,9 +27,9 @@ public class FactsGenerator {
         .map(s -> "position(" + s.getRobot().name().toLowerCase() + ", " + s.getCol() + ", " + s.getRow() + ").");
   }
 
-  private static String generateTarget(InputParser.ParsedInput input) {
+  private static Stream<String> generateTarget(InputParser.ParsedInput input) {
     val obj = input.getObjective();
-    return "target(" + obj.getRobot().name().toLowerCase() + ", " + obj.getCol() + ", " + obj.getRow() + ").";
+    return Stream.of("target(" + obj.getRobot().name().toLowerCase() + ", " + obj.getCol() + ", " + obj.getRow() + ").");
   }
 
   private static Stream<String> generateBarriers(InputParser.ParsedInput input) {
