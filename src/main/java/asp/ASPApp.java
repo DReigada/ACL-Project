@@ -12,8 +12,14 @@ public class ASPApp {
     val inputFile = new File("/Users/dreigada/IST/ALC/puzzles/small_puzzle/small_1.rr");
     val input = new InputParser(inputFile).parse();
 
-    new Runner().run(input);
+    val moves = new Runner().run(input);
 
+    if (moves.isPresent()) {
+      val output = OutputFormatter.format(moves.get());
+      System.out.println(output);
+    } else {
+      System.out.println("UNSAT");
+    }
   }
 
 }
