@@ -12,7 +12,7 @@ stop(-DX,-DY,X+DX,Y+DY) :- stop(DX,DY,X,Y).
 
 position(R,X,Y,0) :- position(R,X,Y).
 
-1 { move(R,DX,DY,T) : robot(R) : dir(DX,DY) } 1 :- time(T).
+{ move(R,DX,DY,T) : dir(DX,DY) } 1 :- time(T), robot(R).
 
 halt(R,DX,DY,X,Y,T) :- robot(R), stop(DX,DY,X,Y), time(T).
 halt(R,DX,DY,X,Y,T) :- robot(R), dir(DX,DY), position(RR,X+DX,Y+DY,T), R != RR, dim(X;Y;X+DX;Y+DY).
