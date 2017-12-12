@@ -5,6 +5,7 @@ import fomatters.IParser;
 import lombok.val;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,10 +21,24 @@ public class Runner {
     writeToTempModelFile();
     writeToTempFactsFile(input);
 
-    val stdOut = exec(4);
-    val reader = new BufferedReader(new InputStreamReader(stdOut));
+    val obj = input.getObjective();
+    val initObj = input.getStartingPositions().stream().filter(p -> p.getRobot().equals(obj.getRobot())).findFirst().get();
 
-    return new OutputParser(reader).parse();
+    if (initObj.equals(obj)) {
+      return Optional.of(new ArrayList<>());
+    }
+
+    for (int i = 1; i < 20; i++) {
+      val stdOut = exec(i);
+      val reader = new BufferedReader(new InputStreamReader(stdOut));
+
+      val out = new OutputParser(reader).parse();
+      if (out.isPresent()) {
+        return out;
+      }
+    }
+
+    return Optional.empty();
   }
 
 
