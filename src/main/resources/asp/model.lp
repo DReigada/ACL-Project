@@ -15,15 +15,20 @@ position(R,X,Y,0) :- position(R,X,Y).
 { move(R,DX,DY,T) : dir(DX,DY) } 1 :- time(T), robot(R).
 
 halt(R,DX,DY,X,Y,T) :- robot(R), stop(DX,DY,X,Y), time(T).
-halt(R,DX,DY,X,Y,T) :- robot(R), dir(DX,DY), position(RR,X+DX,Y+DY,T), R != RR, dim(X;Y;X+DX;Y+DY).
+halt(R,DX,DY,X,Y,T) :- robot(R), dir(DX,DY), position(RR,X+DX,Y+DY,T - 1), R != RR, dim(X;Y;X+DX;Y+DY), time(T).
 
 goto(R,DX,DY,X+DX,Y+DY,T) :- position(R,X,Y,T-1), not halt(R,DX,DY,X,Y,T), dir(DX,DY), time(T), dim(X+DX;Y+DY).
 goto(R,DX,DY,X+DX,Y+DY,T) :- goto(R,DX,DY,X,Y,T), not halt(R,DX,DY,X,Y,T), dim(X+DX;Y+DY).
 
 stay(R,T) :- { move(R,DX,DY,T) : dir(DX,DY) } 0, robot(R), time(T).
 stay(R,T) :- move(R,DX,DY,T), position(R,X,Y,T-1), not goto(R,DX,DY,X+DX,Y+DY,T).
+% a robot can't use a robot that moved as a stop in the same round
+stay(R,T) :- goto(R,DX,DY,X,Y,T), not goto(R,DX,DY,X+DX,Y+DY,T), position(RR, X+DX,Y+DY, T - 1), move(RR,DXX,DYY,T), R != RR.
 
-position(R,X,Y,T) :- move(R,DX,DY,T), goto(R,DX,DY,X,Y,T), not goto(R,DX,DY,X+DX,Y+DY,T).
+% if a robot stayed in the same place then it can't move
+{ move(R,DX,DY,T) : dir(DX,DY) } 0 :- time(T), robot(R), stay(R, T).
+
+position(R,X,Y,T) :- move(R,DX,DY,T), goto(R,DX,DY,X,Y,T), not goto(R,DX,DY,X+DX,Y+DY,T), not stay(R, T).
 position(R,X,Y,T) :- position(R,X,Y,T-1), stay(R,T), time(T).
 
 :- target(R,X,Y), not position(R,X,Y,horizon).
