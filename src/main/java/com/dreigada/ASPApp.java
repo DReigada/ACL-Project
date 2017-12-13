@@ -1,5 +1,7 @@
-package asp;
+package com.dreigada;
 
+import asp.OutputFormatter;
+import asp.Runner;
 import fomatters.InputParser;
 import lombok.val;
 
@@ -9,7 +11,6 @@ public class ASPApp {
   public static void main(String[] args) throws Exception {
 
     val inputFile = new File(args[0]);
-//    val inputFile = new File("/Users/dreigada/IST/ALC/puzzles/tests/r8_25_12.rr");
     val input = new InputParser(inputFile).parse();
 
     val startTime = System.currentTimeMillis();

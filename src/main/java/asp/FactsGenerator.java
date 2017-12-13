@@ -38,11 +38,11 @@ public class FactsGenerator {
         .map(w -> {
           switch (w.getDirection()) {
             case Up:
-              return barriersFactString(w.getRow(), w.getCol() - 1, false);
+              return barriersFactString(w.getRow() - 1, w.getCol(), false);
             case Down:
               return barriersFactString(w.getRow(), w.getCol(), false);
             case Left:
-              return barriersFactString(w.getRow() - 1, w.getCol(), true);
+              return barriersFactString(w.getRow(), w.getCol() - 1, true);
             case Right:
               return barriersFactString(w.getRow(), w.getCol(), true);
             default:
@@ -52,7 +52,7 @@ public class FactsGenerator {
         });
   }
 
-  private static String barriersFactString(int i, int j, boolean horizontal) {
-    return "barrier(" + j + ", " + i + ", " + (horizontal ? 1 : 0) + ", " + (horizontal ? 0 : 1) + ").";
+  private static String barriersFactString(int row, int col, boolean horizontal) {
+    return "barrier(" + col + ", " + row + ", " + (horizontal ? 1 : 0) + ", " + (horizontal ? 0 : 1) + ").";
   }
 }
