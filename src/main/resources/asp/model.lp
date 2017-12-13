@@ -31,6 +31,7 @@ stay(R,T) :- goto(R,DX,DY,X,Y,T), not goto(R,DX,DY,X+DX,Y+DY,T), position(RR, X+
 position(R,X,Y,T) :- move(R,DX,DY,T), goto(R,DX,DY,X,Y,T), not goto(R,DX,DY,X+DX,Y+DY,T), not stay(R, T).
 position(R,X,Y,T) :- position(R,X,Y,T-1), stay(R,T), time(T).
 
+:- position(R,X,Y,T), position(RR,X,Y,T), R != RR. 
 :- target(R,X,Y), not position(R,X,Y,horizon).
 
 #hide.
