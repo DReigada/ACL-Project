@@ -19,7 +19,7 @@ public class ASPApp {
 
     val endTime = System.currentTimeMillis();
 
-    System.err.println("Duration: " + (endTime - startTime));
+//    System.err.println("Duration: " + (endTime - startTime));
 
     if (moves.isPresent()) {
       val output = OutputFormatter.format(moves.get());
