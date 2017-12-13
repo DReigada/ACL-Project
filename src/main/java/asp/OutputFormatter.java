@@ -15,7 +15,9 @@ public class OutputFormatter {
             + move.getDir().toString().substring(0, 1).toLowerCase())
         .collect(Collectors.joining("\n"));
 
-    val usedMoves = moves.stream().max(Comparator.comparingInt(OutputParser.Move::getTime)).get().getTime();
+    val usedMoves = moves.stream().max(Comparator.comparingInt(OutputParser.Move::getTime))
+        .map(OutputParser.Move::getTime)
+        .orElse(0);
 
     return usedMoves + "\n" + formattedMoves;
   }
