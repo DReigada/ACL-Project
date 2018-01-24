@@ -21,12 +21,28 @@ public abstract class IParser {
   public class Position {
     Robot robot;
     int i, j;
+
+    public int getCol() {
+      return j + 1;
+    }
+
+    public int getRow() {
+      return i + 1;
+    }
   }
 
   @Value
   public class Wall {
     int i, j;
     Table.Direction direction;
+
+    public int getCol() {
+      return j + 1;
+    }
+
+    public int getRow() {
+      return i + 1;
+    }
   }
 
 
